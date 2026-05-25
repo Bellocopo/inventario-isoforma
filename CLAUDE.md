@@ -104,21 +104,21 @@ ou nos planos.
 
 ### Planos
 
-| #   | Plano                                                                                             | Status                        |
-| --- | ------------------------------------------------------------------------------------------------- | ----------------------------- |
-| 001 | [Arquitetura inicial e modelo de dados](.claude/plans/001-initial-architecture-and-data-model.md) | concluído (só docs)           |
-| 002 | [Bootstrap do projeto](.claude/plans/002-bootstrap-project.md)                                    | aprovado, aguardando execução |
-| 003 | Firebase setup (env, regras, custom claims, set-role)                                             | pendente                      |
-| 004 | Auth (login real, guard de rotas)                                                                 | pendente                      |
-| 005 | Catálogo (CRUD `/catalog`)                                                                        | pendente                      |
-| 006 | Storage locations + stock items (Direito/Esquerdo)                                                | pendente                      |
-| 007 | Áreas livres (Fora, Masters, Aditivos)                                                            | pendente                      |
-| 008 | Kardex                                                                                            | pendente                      |
-| 009 | Dashboard + busca + regra ≤25kg                                                                   | pendente                      |
-| 010 | Planilha Amarela + export Excel                                                                   | pendente                      |
-| 011 | Migração `legacy/db.json` → Firestore                                                             | pendente                      |
-| 012 | Deploy GitHub Pages + Actions                                                                     | pendente                      |
-| 013 | App Check                                                                                         | pendente                      |
+| #   | Plano                                                                                             | Status              |
+| --- | ------------------------------------------------------------------------------------------------- | ------------------- |
+| 001 | [Arquitetura inicial e modelo de dados](.claude/plans/001-initial-architecture-and-data-model.md) | concluído (só docs) |
+| 002 | [Bootstrap do projeto](.claude/plans/002-bootstrap-project.md)                                    | concluído           |
+| 003 | [Firebase setup](.claude/plans/003-firebase-setup.md)                                             | concluído           |
+| 004 | Auth (login real, guard de rotas)                                                                 | pendente            |
+| 005 | Catálogo (CRUD `/catalog`)                                                                        | pendente            |
+| 006 | Storage locations + stock items (Direito/Esquerdo)                                                | pendente            |
+| 007 | Áreas livres (Fora, Masters, Aditivos)                                                            | pendente            |
+| 008 | Kardex                                                                                            | pendente            |
+| 009 | Dashboard + busca + regra ≤25kg                                                                   | pendente            |
+| 010 | Planilha Amarela + export Excel                                                                   | pendente            |
+| 011 | Migração `legacy/db.json` → Firestore                                                             | pendente            |
+| 012 | Deploy GitHub Pages + Actions                                                                     | pendente            |
+| 013 | App Check                                                                                         | pendente            |
 
 Roadmap completo em [.claude/architecture.md §12](.claude/architecture.md).
 
@@ -129,17 +129,28 @@ inventario-isoforma/
 ├── .claude/
 │   ├── architecture.md            # referência viva
 │   └── plans/                     # planos numerados
+├── firestore/
+│   ├── firestore.rules            # regras de segurança (versionadas)
+│   └── firestore.indexes.json
 ├── legacy/                        # sistema antigo (read-only, referência)
-│   ├── index.html
-│   ├── db.json
-│   ├── *.json                     # dumps das coleções legadas
-│   └── Manual_de_Funcionamento_Inventario_Isoforma.pdf
-├── CLAUDE.md                      # este arquivo
-└── .git/
+├── scripts/
+│   └── set-role.ts                # promove custom claim via Admin SDK
+├── src/
+│   ├── features/                  # domínios de negócio
+│   ├── routes/                    # file-based routing (TanStack Router)
+│   └── shared/
+│       └── lib/
+│           ├── env.ts             # validação das vars de ambiente (zod)
+│           └── firebase.ts        # cliente Firebase (auth + firestore)
+├── .env.example                   # template de variáveis de ambiente
+├── .firebaserc
+├── firebase.json                  # configuração CLI + emuladores
+├── package.json
+├── README.md
+├── tsconfig.json
+├── tsconfig.scripts.json          # tsconfig específico para scripts/
+└── vite.config.ts
 ```
-
-A árvore do projeto novo (`src/`, `package.json`, etc.) ainda não existe —
-nasce com o Plano 002.
 
 ## Diretrizes técnicas (resumo)
 
@@ -160,6 +171,21 @@ Pontos que valem reforço aqui porque guiam decisões do dia a dia:
   planos numerados ou conversa direta.
 - **Legacy é read-only.** Consulta sim, edição não.
 
+## Comandos npm
+
+| Comando                                       | O que faz                                   |
+| --------------------------------------------- | ------------------------------------------- |
+| `npm run dev`                                 | Sobe Vite em http://localhost:3001          |
+| `npm run build`                               | Build de produção (`dist/`)                 |
+| `npm run typecheck`                           | Checa tipos sem emitir                      |
+| `npm run lint`                                | ESLint em todo o projeto                    |
+| `npm run format`                              | Prettier em todo o projeto                  |
+| `npm run emu`                                 | Sobe Firebase Emulator Suite                |
+| `npm run rules:deploy`                        | Deploy das regras Firestore no projeto prod |
+| `npm run set-role -- <email> <admin\|reader>` | Aplica custom claim via Admin SDK           |
+
+Para `set-role`, exportar `GOOGLE_APPLICATION_CREDENTIALS=secrets/service-account.json` antes.
+
 ## Quando começar uma sessão
 
 1. Ler este `CLAUDE.md`.
@@ -170,8 +196,5 @@ Pontos que valem reforço aqui porque guiam decisões do dia a dia:
 
 ## Notas para refinar depois
 
-- Adicionar lista de comandos npm comuns assim que o Plano 002 rodar
-  (`npm run dev`, `npm run lint`, etc.).
-- Documentar o fluxo de promover usuário a admin (Plano 003).
 - Documentar o fluxo de deploy (Plano 012).
 - Convenções de commit (padrão tipo `chore:`, `feat:`, `fix:` + `(#NNN)`).

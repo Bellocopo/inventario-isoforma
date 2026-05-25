@@ -6,7 +6,7 @@
 
 Status: **vivo** — atualize ao tomar novas decisões transversais.
 
-Última revisão: 2026-05-22.
+Última revisão: 2026-05-25.
 
 ---
 
@@ -38,23 +38,24 @@ duro: nada de backend próprio.
 
 ## 2. Stack
 
-| Camada            | Escolha                                              |
-| ----------------- | ---------------------------------------------------- |
-| Build             | Vite                                                 |
-| Linguagem         | TypeScript                                           |
-| UI                | React 18                                             |
-| Estilo            | Tailwind CSS (build local, não CDN)                  |
-| Router            | TanStack Router (file-based, com plugin Vite)        |
-| State client      | Zustand (UI/filters); Context para Auth              |
-| Dados Firestore   | Hooks custom com `onSnapshot` (sem TanStack Query)   |
-| Auth              | Firebase Authentication (email/senha)                |
-| Autorização       | Firebase Custom Claims (`role`)                      |
-| Banco             | Firestore (coleções normalizadas, ver §5)            |
-| Export Excel      | `exceljs`                                            |
-| Validação form    | `zod` + `react-hook-form` (formularios não triviais) |
-| Hospedagem        | GitHub Pages                                         |
-| CI/build          | GitHub Actions                                       |
-| Segredos          | GitHub Actions Secrets (`VITE_FIREBASE_*`)           |
+| Camada          | Escolha                                                      |
+| --------------- | ------------------------------------------------------------ |
+| Build           | Vite                                                         |
+| Linguagem       | TypeScript                                                   |
+| UI              | React 18                                                     |
+| Estilo          | Tailwind CSS (build local, não CDN)                          |
+| Router          | TanStack Router (file-based, com plugin Vite)                |
+| State client    | Zustand (UI/filters); Context para Auth                      |
+| Dados Firestore | Hooks custom com `onSnapshot` (sem TanStack Query)           |
+| Auth            | Firebase Authentication (email/senha)                        |
+| Autorização     | Firebase Custom Claims (`role`)                              |
+| Banco           | Firestore (coleções normalizadas, ver §5)                    |
+| Export Excel    | `exceljs`                                                    |
+| Validação form  | `zod` + `react-hook-form` (formularios não triviais)         |
+| Dev local       | Firebase Emulator Suite (Auth:9099, Firestore:8080, UI:4000) |
+| Hospedagem      | GitHub Pages                                                 |
+| CI/build        | GitHub Actions                                               |
+| Segredos        | GitHub Actions Secrets (`VITE_FIREBASE_*`)                   |
 
 Versões fixadas no `package.json` quando o plano de bootstrap rodar.
 
@@ -73,6 +74,20 @@ Versões fixadas no `package.json` quando o plano de bootstrap rodar.
   Firestore estritas**, (b) **domínios autorizados** no console Firebase
   (whitelist do domínio do GH Pages), e (c) **App Check** como reforço futuro
   (ver §11).
+
+### Desenvolvimento local
+
+- Variáveis de ambiente em `.env.local` (gitignored), copiadas de `.env.example`.
+  Validadas no boot via `zod` em `src/shared/lib/env.ts` — o app aborta
+  imediatamente com erro descritivo se alguma var faltar.
+- `VITE_USE_EMULATORS=true` em `.env.local` conecta o cliente ao Emulator
+  Suite em vez do Firebase produção. Emuladores sobem com `npm run emu`
+  (`firebase.json` configura as portas).
+- Service account para o script Admin SDK fica em `secrets/` (gitignored).
+  Ver README → "Promover usuário a admin".
+- `tsconfig.scripts.json` específico para `scripts/` (target ES2022,
+  module NodeNext) — garante top-level `await` sem comprometer o tsconfig
+  do bundle cliente.
 
 ## 4. Estrutura de pastas
 
@@ -148,19 +163,20 @@ Catálogo unificado de resinas, masters e aditivos.
 
 ```ts
 {
-  tipo: string;                         // "R-350-L", "MASTER PSAI BRANCO 001", ...
-  embal: "SC" | "BB";                   // saco / big-bag
-  kg: number;                           // peso por unidade de embalagem
+  tipo: string; // "R-350-L", "MASTER PSAI BRANCO 001", ...
+  embal: "SC" | "BB"; // saco / big-bag
+  kg: number; // peso por unidade de embalagem
   categoria: "PADRAO" | "MASTER" | "ADITIVO";
-  colorCode: string | null;             // hex (#RRGGBB) para masters/aditivos
-  fornecedor: string | null;            // "innova", "unigel", ... (legenda de cor da UI)
-  ativo: boolean;                       // soft-delete: false = obsoleto, não some do histórico
+  colorCode: string | null; // hex (#RRGGBB) para masters/aditivos
+  fornecedor: string | null; // "innova", "unigel", ... (legenda de cor da UI)
+  ativo: boolean; // soft-delete: false = obsoleto, não some do histórico
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
 ```
 
 Notas:
+
 - **Identidade estável**: `materialId` é o auto-ID. Renomear `tipo` não quebra
   `stock_items` nem `kardex`.
 - Materiais "obsoletos" usam `ativo: false` (não delete). Excluir de verdade
@@ -173,15 +189,16 @@ Uma rua/área física. ID legível para facilitar regras e debug.
 ```ts
 {
   area: "direito" | "esquerdo" | "fora" | "masters" | "aditivos";
-  rua: string | null;            // "A".."Z", "A1".."G1" para direito/esquerdo; null para áreas livres
-  label: string;                 // nome amigável ("Direito A", "Doca", "Sala dos Masters - bloco 1")
+  rua: string | null; // "A".."Z", "A1".."G1" para direito/esquerdo; null para áreas livres
+  label: string; // nome amigável ("Direito A", "Doca", "Sala dos Masters - bloco 1")
   fornecedorPadrao: string | null; // legenda de cor sugerida (apenas direito/esquerdo)
-  ordem: number;                 // ordenação na UI
+  ordem: number; // ordenação na UI
   createdAt: Timestamp;
 }
 ```
 
 IDs convencionados:
+
 - Lados: `direito_A`, `direito_B1`, `esquerdo_M`, ... (formato `<area>_<rua>`).
 - Áreas livres: `fora_<slug>`, `masters_<slug>`, `aditivos_<slug>` (slugs
   derivados do label ou auto-ID, decidir no plano de bootstrap).
@@ -193,17 +210,18 @@ empacotado. Isso destrava updates atômicos e regras granulares.
 
 ```ts
 {
-  materialId: string;            // FK -> /catalog
-  materialSnapshot: {            // congelado no momento da escrita (resiliência)
+  materialId: string; // FK -> /catalog
+  materialSnapshot: {
+    // congelado no momento da escrita (resiliência)
     tipo: string;
     embal: "SC" | "BB";
     kgUnit: number;
     categoria: "PADRAO" | "MASTER" | "ADITIVO";
-  };
-  quantidade: number;            // nº de paletes/sacos
-  slot: number | null;           // 1..4 para ruas com slots numerados; null para áreas livres
+  }
+  quantidade: number; // nº de paletes/sacos
+  slot: number | null; // 1..4 para ruas com slots numerados; null para áreas livres
   updatedAt: Timestamp;
-  updatedBy: string;              // uid do usuário
+  updatedBy: string; // uid do usuário
 }
 ```
 
@@ -215,23 +233,25 @@ excluir entradas individuais (espelha comportamento atual).
 ```ts
 {
   timestamp: Timestamp;
-  materialId: string;            // FK
-  materialSnapshot: {            // FK + snapshot (resiliência a renames)
+  materialId: string; // FK
+  materialSnapshot: {
+    // FK + snapshot (resiliência a renames)
     tipo: string;
     embal: "SC" | "BB";
     kgUnit: number;
-  };
-  locationId: string;            // FK -> /storage_locations
-  locationLabel: string;         // snapshot do label na hora
+  }
+  locationId: string; // FK -> /storage_locations
+  locationLabel: string; // snapshot do label na hora
   tipo: "ENTRADA" | "SAIDA";
-  qtd: number;                   // sempre positivo
-  kgTotal: number;               // qtd * kgUnit
+  qtd: number; // sempre positivo
+  kgTotal: number; // qtd * kgUnit
   userId: string;
-  userDisplay: string;           // snapshot do nome exibido
+  userDisplay: string; // snapshot do nome exibido
 }
 ```
 
 Índices necessários (compound):
+
 - `(materialId asc, timestamp desc)` — histórico por material.
 - `(locationId asc, timestamp desc)` — histórico por rua.
 - `timestamp desc` — listagem geral mais recente.
@@ -246,7 +266,7 @@ amigável para UI. Não usada por regras.
 {
   email: string;
   displayName: string;
-  role: "admin" | "reader";       // espelho do claim, atualizado pelo script set-role
+  role: "admin" | "reader"; // espelho do claim, atualizado pelo script set-role
   updatedAt: Timestamp;
 }
 ```
@@ -359,18 +379,18 @@ e popula o Firestore:
 
 ## 10. Mapeamento "feature legacy → onde fica agora"
 
-| Feature legacy (PDF §4)                       | Rota nova                          | Feature module           |
-| --------------------------------------------- | ---------------------------------- | ------------------------ |
-| 4.1 Dashboard Central                         | `/` (em `_app`)                    | `features/storage` + `catalog` (agregação) |
-| 4.2 Lado Direito                              | `/direito`                         | `features/storage`       |
-| 4.2 Lado Esquerdo                             | `/esquerdo`                        | `features/storage`       |
-| 4.3 Fora do Local                             | `/fora`                            | `features/storage`       |
-| 4.3 Sala dos Masters                          | `/masters`                         | `features/storage`       |
-| 4.3 Aditivos Químicos                         | `/aditivos`                        | `features/storage`       |
-| 4.4 Kardex                                    | `/kardex`                          | `features/kardex`        |
-| 4.5 Planilha Amarela + Excel                  | `/planilha-amarela`                | `features/reports`       |
-| 4.5 Gerir Materiais Existentes                | `/catalogo`                        | `features/catalog`       |
-| Login                                         | `/login`                           | `features/auth`          |
+| Feature legacy (PDF §4)        | Rota nova           | Feature module                             |
+| ------------------------------ | ------------------- | ------------------------------------------ |
+| 4.1 Dashboard Central          | `/` (em `_app`)     | `features/storage` + `catalog` (agregação) |
+| 4.2 Lado Direito               | `/direito`          | `features/storage`                         |
+| 4.2 Lado Esquerdo              | `/esquerdo`         | `features/storage`                         |
+| 4.3 Fora do Local              | `/fora`             | `features/storage`                         |
+| 4.3 Sala dos Masters           | `/masters`          | `features/storage`                         |
+| 4.3 Aditivos Químicos          | `/aditivos`         | `features/storage`                         |
+| 4.4 Kardex                     | `/kardex`           | `features/kardex`                          |
+| 4.5 Planilha Amarela + Excel   | `/planilha-amarela` | `features/reports`                         |
+| 4.5 Gerir Materiais Existentes | `/catalogo`         | `features/catalog`                         |
+| Login                          | `/login`            | `features/auth`                            |
 
 Regra de negócio crítica do PDF (Paletes vs Sacos ≤ 25kg): centralizar em
 `shared/lib/business.ts` (`isSack(material): boolean`,
@@ -395,18 +415,18 @@ Regra de negócio crítica do PDF (Paletes vs Sacos ≤ 25kg): centralizar em
 Cada item vira um arquivo em `.claude/plans/nnn-*.md`. Esta lista é
 ponto-de-partida; ajuste conforme o trabalho avança.
 
-| #   | Plano                                                                |
-| --- | -------------------------------------------------------------------- |
-| 001 | Arquitetura inicial + modelo de dados (este; doc + roadmap)          |
+| #   | Plano                                                                  |
+| --- | ---------------------------------------------------------------------- |
+| 001 | Arquitetura inicial + modelo de dados (este; doc + roadmap)            |
 | 002 | Bootstrap do projeto (Vite + TS + Tailwind + TanStack Router + shells) |
 | 003 | Firebase setup: config via env, regras, custom claims, script set-role |
-| 004 | Auth (login, guard de rota, useAuth/useRole)                         |
-| 005 | Catálogo (CRUD em `/catalog` + UI de gestão)                          |
-| 006 | Storage locations + stock items (Direito/Esquerdo)                   |
-| 007 | Áreas livres (Fora, Masters, Aditivos)                               |
-| 008 | Kardex (listeners, escrita via onBlur, exclusão admin)               |
-| 009 | Dashboard (agregações, busca de material, regra ≤25kg)               |
-| 010 | Planilha Amarela + export Excel (exceljs)                            |
-| 011 | Migração `legacy/db.json` → Firestore (script + dry-run)             |
-| 012 | Deploy GitHub Pages + Actions + secrets                              |
-| 013 | App Check (quando domínio estabilizar)                               |
+| 004 | Auth (login, guard de rota, useAuth/useRole)                           |
+| 005 | Catálogo (CRUD em `/catalog` + UI de gestão)                           |
+| 006 | Storage locations + stock items (Direito/Esquerdo)                     |
+| 007 | Áreas livres (Fora, Masters, Aditivos)                                 |
+| 008 | Kardex (listeners, escrita via onBlur, exclusão admin)                 |
+| 009 | Dashboard (agregações, busca de material, regra ≤25kg)                 |
+| 010 | Planilha Amarela + export Excel (exceljs)                              |
+| 011 | Migração `legacy/db.json` → Firestore (script + dry-run)               |
+| 012 | Deploy GitHub Pages + Actions + secrets                                |
+| 013 | App Check (quando domínio estabilizar)                                 |

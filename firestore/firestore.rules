@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() { return request.auth != null; }
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.role == 'admin';
+    }
+
+    match /catalog/{materialId} {
+      allow read:  if isSignedIn();
+      allow write: if isAdmin();
+    }
+
+    match /storage_locations/{locationId} {
+      allow read:  if isSignedIn();
+      allow write: if isAdmin();
+      match /stock_items/{itemId} {
+        allow read:           if isSignedIn();
+        allow create, update: if isAdmin();
+        allow delete:         if isAdmin();
+      }
+    }
+
+    match /kardex/{logId} {
+      allow read:   if isSignedIn();
+      allow create: if isAdmin();
+      allow update: if false;
+      allow delete: if isAdmin();
+    }
+
+    match /users/{uid} {
+      allow read:  if isSignedIn();
+      allow write: if false;
+    }
+
+    match /{document=**} { allow read, write: if false; }
+  }
+}

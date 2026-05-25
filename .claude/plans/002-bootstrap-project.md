@@ -1,6 +1,6 @@
 # Plano 002 — Bootstrap do projeto
 
-Status: **aprovado, aguardando execução**.
+Status: **concluído**.
 
 ## Context
 
