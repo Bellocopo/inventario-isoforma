@@ -30,6 +30,15 @@ e ataca os problemas estruturais.
 4. **Implementar só depois da aprovação do plano.** Quando estiver em plan
    mode, encerrar com `ExitPlanMode`.
 
+### Execução passo a passo
+
+A execução de qualquer plano é **sempre passo a passo**:
+
+- O usuário indica o passo a executar (pelo número ou descrição).
+- Claude executa **apenas aquele passo** e para.
+- Claude aguarda autorização explícita antes de avançar para o próximo passo.
+- Não encadear passos automaticamente, mesmo que o próximo pareça trivial.
+
 ### Numeração dos planos
 
 `.claude/plans/NNN-slug-em-kebab.md`, com `NNN` zero-padded a 3 dígitos.
@@ -43,21 +52,27 @@ Cabeçalho mínimo de cada plano:
 Status: rascunho | aprovado, aguardando execução | em execução | concluído
 
 ## Context
+
 [Por que existe; o que motivou]
 
 ## Decisões consolidadas
+
 [Tabela das escolhas tomadas comigo]
 
 ## Passos de execução
+
 [Lista numerada acionável]
 
 ## Arquivos criados / modificados
+
 [Lista clara]
 
 ## Verificação end-to-end
+
 [Como testar que ficou ok]
 
 ## Não-objetivos (explícitos)
+
 [O que NÃO entra neste plano]
 ```
 
@@ -89,21 +104,21 @@ ou nos planos.
 
 ### Planos
 
-| #   | Plano                                                      | Status                          |
-| --- | ---------------------------------------------------------- | ------------------------------- |
-| 001 | [Arquitetura inicial e modelo de dados](.claude/plans/001-initial-architecture-and-data-model.md) | concluído (só docs)             |
-| 002 | [Bootstrap do projeto](.claude/plans/002-bootstrap-project.md) | aprovado, aguardando execução |
-| 003 | Firebase setup (env, regras, custom claims, set-role)      | pendente                        |
-| 004 | Auth (login real, guard de rotas)                          | pendente                        |
-| 005 | Catálogo (CRUD `/catalog`)                                 | pendente                        |
-| 006 | Storage locations + stock items (Direito/Esquerdo)         | pendente                        |
-| 007 | Áreas livres (Fora, Masters, Aditivos)                     | pendente                        |
-| 008 | Kardex                                                     | pendente                        |
-| 009 | Dashboard + busca + regra ≤25kg                            | pendente                        |
-| 010 | Planilha Amarela + export Excel                            | pendente                        |
-| 011 | Migração `legacy/db.json` → Firestore                      | pendente                        |
-| 012 | Deploy GitHub Pages + Actions                              | pendente                        |
-| 013 | App Check                                                  | pendente                        |
+| #   | Plano                                                                                             | Status                        |
+| --- | ------------------------------------------------------------------------------------------------- | ----------------------------- |
+| 001 | [Arquitetura inicial e modelo de dados](.claude/plans/001-initial-architecture-and-data-model.md) | concluído (só docs)           |
+| 002 | [Bootstrap do projeto](.claude/plans/002-bootstrap-project.md)                                    | aprovado, aguardando execução |
+| 003 | Firebase setup (env, regras, custom claims, set-role)                                             | pendente                      |
+| 004 | Auth (login real, guard de rotas)                                                                 | pendente                      |
+| 005 | Catálogo (CRUD `/catalog`)                                                                        | pendente                      |
+| 006 | Storage locations + stock items (Direito/Esquerdo)                                                | pendente                      |
+| 007 | Áreas livres (Fora, Masters, Aditivos)                                                            | pendente                      |
+| 008 | Kardex                                                                                            | pendente                      |
+| 009 | Dashboard + busca + regra ≤25kg                                                                   | pendente                      |
+| 010 | Planilha Amarela + export Excel                                                                   | pendente                      |
+| 011 | Migração `legacy/db.json` → Firestore                                                             | pendente                      |
+| 012 | Deploy GitHub Pages + Actions                                                                     | pendente                      |
+| 013 | App Check                                                                                         | pendente                      |
 
 Roadmap completo em [.claude/architecture.md §12](.claude/architecture.md).
 
