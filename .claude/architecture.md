@@ -275,15 +275,33 @@ amigável para UI. Não usada por regras.
 
 - **Auth**: Firebase Authentication com email/senha. Mantém usuários atuais.
 - **Roles**: Custom Claims. Cada usuário recebe `{ role: "admin" | "reader" }`.
-  Sem claim explícito = `reader`.
+  Sem claim explícito = `null` (tratado como reader na UI, barrado nas regras).
 - **Configuração inicial**: script `scripts/set-role.ts` (Node + Firebase
   Admin SDK), executado localmente pelo dono usando uma service account.
   Documentado no README. Sem UI de gerenciamento por agora.
-- **Cliente**: após login, o app força refresh do ID token
-  (`getIdTokenResult(true)`) para ler a claim atualizada. Helper
-  `useRole()` em `features/auth`.
+- **Estado no cliente**: `AuthProvider` (React Context) escuta
+  `onAuthStateChanged` e expõe `status: 'loading' | 'signed-in' | 'signed-out'`,
+  `user`, `role`, `displayName`. `status` começa em `'loading'` até o
+  listener resolver — evita flash de redirect no boot.
+- **Leitura da claim**: `onAuthStateChanged` chama `getIdTokenResult()` (sem
+  force) para ler a claim do cache local. `signIn()` chama
+  `getIdTokenResult(true)` — força refresh — para ler claim recém-aplicada
+  por `set-role` entre sessões.
+- **displayName**: `user.displayName` se preenchido; fallback para a parte
+  local do email capitalizada (ex: `joao@empresa.com` → `"Joao"`).
+  Implementado em `features/auth/displayName.ts`.
+- **Integração com TanStack Router**: `createRootRouteWithContext<{ auth: AuthContextValue }>()`
+  em `__root.tsx`. `main.tsx` injeta o contexto via `<RouterProvider context={{ auth }}>`,
+  alimentado por `useAuth()` dentro de `<AuthProvider>` (`InnerRouter`).
+- **Guards**: `_app.tsx` tem `beforeLoad` que redireciona para `/login?redirect=<href>`
+  quando `status === 'signed-out'`. `login.tsx` tem `beforeLoad` inverso —
+  redireciona para `search.redirect ?? '/'` quando `status === 'signed-in'`.
+- **Splash**: `AuthSplash` full-screen (título + spinner `Loader2`) renderizado
+  pelo `RootLayout` enquanto `status === 'loading'`.
+- **Logout**: botão "Sair" no header do `_app`. Chama `signOutNow()` →
+  `signOut(auth)`; o listener zera o estado automaticamente.
 - **UI**: campos editáveis ficam `disabled` quando `role !== "admin"` —
-  espelha UX atual. Mas a defesa real é nas regras.
+  espelha UX atual. A defesa real é nas regras Firestore.
 
 ## 7. Regras do Firestore (esqueleto)
 

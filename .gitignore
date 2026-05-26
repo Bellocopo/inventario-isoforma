@@ -9,3 +9,4 @@ coverage
 *.tsbuildinfo
 legacy
 secrets/
+*.log

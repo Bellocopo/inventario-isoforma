@@ -109,7 +109,7 @@ ou nos planos.
 | 001 | [Arquitetura inicial e modelo de dados](.claude/plans/001-initial-architecture-and-data-model.md) | concluído (só docs) |
 | 002 | [Bootstrap do projeto](.claude/plans/002-bootstrap-project.md)                                    | concluído           |
 | 003 | [Firebase setup](.claude/plans/003-firebase-setup.md)                                             | concluído           |
-| 004 | Auth (login real, guard de rotas)                                                                 | pendente            |
+| 004 | [Auth (login real, guard de rotas)](.claude/plans/004-auth.md)                                    | concluído           |
 | 005 | Catálogo (CRUD `/catalog`)                                                                        | pendente            |
 | 006 | Storage locations + stock items (Direito/Esquerdo)                                                | pendente            |
 | 007 | Áreas livres (Fora, Masters, Aditivos)                                                            | pendente            |
