@@ -6,7 +6,7 @@
 
 Status: **vivo** — atualize ao tomar novas decisões transversais.
 
-Última revisão: 2026-05-25.
+Última revisão: 2026-05-28.
 
 ---
 
@@ -43,7 +43,9 @@ duro: nada de backend próprio.
 | Build           | Vite                                                         |
 | Linguagem       | TypeScript                                                   |
 | UI              | React 18                                                     |
-| Estilo          | Tailwind CSS (build local, não CDN)                          |
+| Estilo          | Tailwind CSS v4 (build local, não CDN)                       |
+| Componentes     | shadcn/ui (New York, Slate) + Radix UI (via shadcn)          |
+| Tipografia      | Inter (Google Fonts, pesos 400–900)                          |
 | Router          | TanStack Router (file-based, com plugin Vite)                |
 | State client    | Zustand (UI/filters); Context para Auth                      |
 | Dados Firestore | Hooks custom com `onSnapshot` (sem TanStack Query)           |
@@ -439,12 +441,99 @@ ponto-de-partida; ajuste conforme o trabalho avança.
 | 002 | Bootstrap do projeto (Vite + TS + Tailwind + TanStack Router + shells) |
 | 003 | Firebase setup: config via env, regras, custom claims, script set-role |
 | 004 | Auth (login, guard de rota, useAuth/useRole)                           |
-| 005 | Catálogo (CRUD em `/catalog` + UI de gestão)                           |
-| 006 | Storage locations + stock items (Direito/Esquerdo)                     |
-| 007 | Áreas livres (Fora, Masters, Aditivos)                                 |
-| 008 | Kardex (listeners, escrita via onBlur, exclusão admin)                 |
-| 009 | Dashboard (agregações, busca de material, regra ≤25kg)                 |
-| 010 | Planilha Amarela + export Excel (exceljs)                              |
-| 011 | Migração `legacy/db.json` → Firestore (script + dry-run)               |
-| 012 | Deploy GitHub Pages + Actions + secrets                                |
-| 013 | App Check (quando domínio estabilizar)                                 |
+| 005 | Validação pós-auth (checkpoint manual)                                 |
+| 006 | Design system (shadcn/ui, tokens, theme switcher, componentes base)    |
+| 007 | Catálogo (CRUD em `/catalog` + UI de gestão)                           |
+| 008 | Storage locations + stock items (Direito/Esquerdo)                     |
+| 009 | Áreas livres (Fora, Masters, Aditivos)                                 |
+| 010 | Kardex (listeners, escrita via onBlur, exclusão admin)                 |
+| 011 | Dashboard (agregações, busca de material, regra ≤25kg)                 |
+| 012 | Planilha Amarela + export Excel (exceljs)                              |
+| 013 | Migração `legacy/db.json` → Firestore (script + dry-run)               |
+| 014 | Deploy GitHub Pages + Actions + secrets                                |
+| 015 | App Check (quando domínio estabilizar)                                 |
+
+## 13. Design system
+
+Referência visual: pasta [`prints/`](../prints/) (capturas desktop + mobile
+do sistema legado). Fidelidade ao **fluxo** do legado; liberdade visual
+onde melhorar fizer sentido.
+
+### 13.1 Stack
+
+| Item       | Escolha                                                     |
+| ---------- | ----------------------------------------------------------- |
+| Lib base   | shadcn/ui — estilo **New York**, base color **Slate**       |
+| Primitivos | Radix UI (via shadcn — a11y e keyboard nav embutidos)       |
+| Tokens CSS | OKLCH em CSS variables, `@theme inline` (Tailwind v4)       |
+| Tipografia | Inter (400/500/600/700/900) via Google Fonts                |
+| Ícones     | Lucide React                                                |
+| Tema       | Light / Dark / System — `ThemeProvider` em `features/theme` |
+
+### 13.2 Tokens de cor
+
+Definidos em `src/styles/globals.css` no bloco `@theme inline`. Variáveis
+CSS em `:root` (light) e `.dark`. Tokens shadcn padrão + extras Isoforma:
+
+| Token CSS                                      | Uso                                       |
+| ---------------------------------------------- | ----------------------------------------- |
+| `--header` / `--header-foreground`             | Header sempre dark (não inverte com tema) |
+| `--success` / `--success-foreground`           | Verde Isoforma (logo, sync ativo)         |
+| `--warning`                                    | Âmbar — estado "sincronizando"            |
+| `--brand-pink` / `--brand-pink-foreground`     | Fundo/texto seção Masters                 |
+| `--brand-purple` / `--brand-purple-foreground` | Fundo/texto seção Aditivos                |
+
+Cores de fornecedor (identidade externa, HEX fixo) em
+`src/shared/lib/suppliers.ts` — não usam OKLCH, não mudam com o tema.
+
+### 13.3 Tipografia
+
+- Família: `--font-sans: "Inter", ui-sans-serif, system-ui, sans-serif`
+- Labels de campo: `text-xs font-bold uppercase tracking-wider text-muted-foreground`
+- KPI grande: `text-4xl font-black tracking-tight`
+- Padrão de body: `text-sm` (mobile-first)
+
+### 13.4 Radius
+
+Base: `--radius: 0.75rem` (rounded-xl). Escala derivada via `calc()`:
+`sm` −4 px, `md` −2 px, `lg` = base, `xl` +4 px.
+
+### 13.5 Theme switcher
+
+- `ThemeProvider` em `src/features/theme/theme-provider.tsx` — persiste em
+  `localStorage` com chave `inventario-theme`.
+- Aplica `.dark` / `.light` em `document.documentElement`.
+- Modo `"system"` escuta `prefers-color-scheme` dinamicamente.
+- `ModeToggle` (dropdown Claro/Escuro/Sistema) compõe `DropdownMenu` shadcn.
+- **Regra obrigatória:** `AppHeader` usa `bg-header` fixo — não inverte
+  no tema light. Apenas o body/cards adaptam ao tema.
+
+### 13.6 Componentes próprios
+
+Cada componente próprio compõe o primitivo shadcn correspondente para
+herdar a11y/keyboard do Radix de graça:
+
+| Componente       | Shadcn/Radix por baixo    | Localização                            |
+| ---------------- | ------------------------- | -------------------------------------- |
+| `SupplierSelect` | `Select` (Radix Select)   | `shared/components/SupplierSelect.tsx` |
+| `EmbalBadge`     | `Badge` shadcn            | `shared/components/EmbalBadge.tsx`     |
+| `AddRow`         | `Button` (variant ghost)  | `shared/components/AddRow.tsx`         |
+| `ModeToggle`     | `DropdownMenu` + `Button` | `features/theme/ModeToggle.tsx`        |
+| `Logo`           | — (puramente visual)      | `shared/components/Logo.tsx`           |
+| `RoadBadge`      | — (puramente visual)      | `shared/components/RoadBadge.tsx`      |
+| `SyncIndicator`  | — (puramente visual)      | `shared/components/SyncIndicator.tsx`  |
+| `AppHeader`      | composição dos anteriores | `shared/components/AppHeader.tsx`      |
+| `AppTabs`        | `Link` do TanStack Router | `shared/components/AppTabs.tsx`        |
+| `EmConstrucao`   | — (placeholder)           | `shared/components/EmConstrucao.tsx`   |
+
+`AppTabs` usa `Link` + detecção de rota via `useRouterState` em vez de
+`<Tabs>` shadcn (que é orientado a painéis, não navegação).
+
+### 13.7 Padrão UX
+
+- **Forms sempre inline** — nunca modal/dialog para adicionar ou editar.
+  `AddRow` abre um campo inline vazio na tabela/lista.
+- **Fidelidade ao fluxo legado** — mesmas abas, mesma ordem, mesma
+  terminologia (ver prints em `prints/`).
+- **`disabled` é UX, não segurança** — campos editáveis ficam disabled
+  quando `role !== "admin"`. A defesa real são as regras Firestore.

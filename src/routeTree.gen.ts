@@ -12,6 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AppIndexRouteImport } from './routes/_app/index'
+import { Route as AppPlanilhaRouteImport } from './routes/_app/planilha'
+import { Route as AppMastersRouteImport } from './routes/_app/masters'
+import { Route as AppKardexRouteImport } from './routes/_app/kardex'
+import { Route as AppForaRouteImport } from './routes/_app/fora'
+import { Route as AppEsquerdoRouteImport } from './routes/_app/esquerdo'
+import { Route as AppDireitoRouteImport } from './routes/_app/direito'
+import { Route as AppAditivosRouteImport } from './routes/_app/aditivos'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -27,27 +34,112 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPlanilhaRoute = AppPlanilhaRouteImport.update({
+  id: '/planilha',
+  path: '/planilha',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppMastersRoute = AppMastersRouteImport.update({
+  id: '/masters',
+  path: '/masters',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKardexRoute = AppKardexRouteImport.update({
+  id: '/kardex',
+  path: '/kardex',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppForaRoute = AppForaRouteImport.update({
+  id: '/fora',
+  path: '/fora',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppEsquerdoRoute = AppEsquerdoRouteImport.update({
+  id: '/esquerdo',
+  path: '/esquerdo',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppDireitoRoute = AppDireitoRouteImport.update({
+  id: '/direito',
+  path: '/direito',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppAditivosRoute = AppAditivosRouteImport.update({
+  id: '/aditivos',
+  path: '/aditivos',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
+  '/aditivos': typeof AppAditivosRoute
+  '/direito': typeof AppDireitoRoute
+  '/esquerdo': typeof AppEsquerdoRoute
+  '/fora': typeof AppForaRoute
+  '/kardex': typeof AppKardexRoute
+  '/masters': typeof AppMastersRoute
+  '/planilha': typeof AppPlanilhaRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
+  '/aditivos': typeof AppAditivosRoute
+  '/direito': typeof AppDireitoRoute
+  '/esquerdo': typeof AppEsquerdoRoute
+  '/fora': typeof AppForaRoute
+  '/kardex': typeof AppKardexRoute
+  '/masters': typeof AppMastersRoute
+  '/planilha': typeof AppPlanilhaRoute
   '/': typeof AppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
+  '/_app/aditivos': typeof AppAditivosRoute
+  '/_app/direito': typeof AppDireitoRoute
+  '/_app/esquerdo': typeof AppEsquerdoRoute
+  '/_app/fora': typeof AppForaRoute
+  '/_app/kardex': typeof AppKardexRoute
+  '/_app/masters': typeof AppMastersRoute
+  '/_app/planilha': typeof AppPlanilhaRoute
   '/_app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/aditivos'
+    | '/direito'
+    | '/esquerdo'
+    | '/fora'
+    | '/kardex'
+    | '/masters'
+    | '/planilha'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/'
-  id: '__root__' | '/_app' | '/login' | '/_app/'
+  to:
+    | '/login'
+    | '/aditivos'
+    | '/direito'
+    | '/esquerdo'
+    | '/fora'
+    | '/kardex'
+    | '/masters'
+    | '/planilha'
+    | '/'
+  id:
+    | '__root__'
+    | '/_app'
+    | '/login'
+    | '/_app/aditivos'
+    | '/_app/direito'
+    | '/_app/esquerdo'
+    | '/_app/fora'
+    | '/_app/kardex'
+    | '/_app/masters'
+    | '/_app/planilha'
+    | '/_app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -78,14 +170,77 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/planilha': {
+      id: '/_app/planilha'
+      path: '/planilha'
+      fullPath: '/planilha'
+      preLoaderRoute: typeof AppPlanilhaRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/masters': {
+      id: '/_app/masters'
+      path: '/masters'
+      fullPath: '/masters'
+      preLoaderRoute: typeof AppMastersRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/kardex': {
+      id: '/_app/kardex'
+      path: '/kardex'
+      fullPath: '/kardex'
+      preLoaderRoute: typeof AppKardexRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/fora': {
+      id: '/_app/fora'
+      path: '/fora'
+      fullPath: '/fora'
+      preLoaderRoute: typeof AppForaRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/esquerdo': {
+      id: '/_app/esquerdo'
+      path: '/esquerdo'
+      fullPath: '/esquerdo'
+      preLoaderRoute: typeof AppEsquerdoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/direito': {
+      id: '/_app/direito'
+      path: '/direito'
+      fullPath: '/direito'
+      preLoaderRoute: typeof AppDireitoRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/aditivos': {
+      id: '/_app/aditivos'
+      path: '/aditivos'
+      fullPath: '/aditivos'
+      preLoaderRoute: typeof AppAditivosRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppAditivosRoute: typeof AppAditivosRoute
+  AppDireitoRoute: typeof AppDireitoRoute
+  AppEsquerdoRoute: typeof AppEsquerdoRoute
+  AppForaRoute: typeof AppForaRoute
+  AppKardexRoute: typeof AppKardexRoute
+  AppMastersRoute: typeof AppMastersRoute
+  AppPlanilhaRoute: typeof AppPlanilhaRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppAditivosRoute: AppAditivosRoute,
+  AppDireitoRoute: AppDireitoRoute,
+  AppEsquerdoRoute: AppEsquerdoRoute,
+  AppForaRoute: AppForaRoute,
+  AppKardexRoute: AppKardexRoute,
+  AppMastersRoute: AppMastersRoute,
+  AppPlanilhaRoute: AppPlanilhaRoute,
   AppIndexRoute: AppIndexRoute,
 }
 

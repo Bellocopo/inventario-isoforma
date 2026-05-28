@@ -110,15 +110,17 @@ ou nos planos.
 | 002 | [Bootstrap do projeto](.claude/plans/002-bootstrap-project.md)                                    | concluído           |
 | 003 | [Firebase setup](.claude/plans/003-firebase-setup.md)                                             | concluído           |
 | 004 | [Auth (login real, guard de rotas)](.claude/plans/004-auth.md)                                    | concluído           |
-| 005 | Catálogo (CRUD `/catalog`)                                                                        | pendente            |
-| 006 | Storage locations + stock items (Direito/Esquerdo)                                                | pendente            |
-| 007 | Áreas livres (Fora, Masters, Aditivos)                                                            | pendente            |
-| 008 | Kardex                                                                                            | pendente            |
-| 009 | Dashboard + busca + regra ≤25kg                                                                   | pendente            |
-| 010 | Planilha Amarela + export Excel                                                                   | pendente            |
-| 011 | Migração `legacy/db.json` → Firestore                                                             | pendente            |
-| 012 | Deploy GitHub Pages + Actions                                                                     | pendente            |
-| 013 | App Check                                                                                         | pendente            |
+| 005 | Validação pós-auth (checkpoint manual)                                                            | concluído           |
+| 006 | [Design system](.claude/plans/006-design-system.md)                                               | concluído           |
+| 007 | Catálogo (CRUD `/catalog`)                                                                        | pendente            |
+| 008 | Storage locations + stock items (Direito/Esquerdo)                                                | pendente            |
+| 009 | Áreas livres (Fora, Masters, Aditivos)                                                            | pendente            |
+| 010 | Kardex                                                                                            | pendente            |
+| 011 | Dashboard + busca + regra ≤25kg                                                                   | pendente            |
+| 012 | Planilha Amarela + export Excel                                                                   | pendente            |
+| 013 | Migração `legacy/db.json` → Firestore                                                             | pendente            |
+| 014 | Deploy GitHub Pages + Actions                                                                     | pendente            |
+| 015 | App Check                                                                                         | pendente            |
 
 Roadmap completo em [.claude/architecture.md §12](.claude/architecture.md).
 
@@ -196,5 +198,5 @@ Para `set-role`, exportar `GOOGLE_APPLICATION_CREDENTIALS=secrets/service-accoun
 
 ## Notas para refinar depois
 
-- Documentar o fluxo de deploy (Plano 012).
+- Documentar o fluxo de deploy (Plano 014).
 - Convenções de commit (padrão tipo `chore:`, `feat:`, `fix:` + `(#NNN)`).

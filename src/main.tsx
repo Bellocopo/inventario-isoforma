@@ -5,6 +5,7 @@ import { routeTree } from "./routeTree.gen";
 import { AuthProvider } from "./features/auth/AuthProvider";
 import { useAuth } from "./features/auth/useAuth";
 import type { AuthContextValue } from "./features/auth/types";
+import { ThemeProvider } from "./features/theme/theme-provider";
 import "./styles/globals.css";
 
 const router = createRouter({
@@ -34,8 +35,10 @@ const rootElement = document.getElementById("root");
 if (!rootElement) throw new Error("Root element #root não encontrado");
 createRoot(rootElement).render(
   <StrictMode>
-    <AuthProvider>
-      <InnerRouter />
-    </AuthProvider>
+    <ThemeProvider defaultTheme="system" storageKey="inventario-theme">
+      <AuthProvider>
+        <InnerRouter />
+      </AuthProvider>
+    </ThemeProvider>
   </StrictMode>,
 );
