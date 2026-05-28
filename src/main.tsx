@@ -1,5 +1,5 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
-import { StrictMode } from "react";
+import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 import { AuthProvider } from "./features/auth/AuthProvider";
@@ -22,6 +22,11 @@ declare module "@tanstack/react-router" {
 
 function InnerRouter() {
   const auth = useAuth();
+  // Quando o status do auth muda (loading → signed-in/out), invalida o
+  // router para que os `beforeLoad` das rotas re-rodem com o context novo.
+  useEffect(() => {
+    void router.invalidate();
+  }, [auth.status]);
   return <RouterProvider router={router} context={{ auth }} />;
 }
 

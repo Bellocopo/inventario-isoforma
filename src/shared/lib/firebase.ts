@@ -23,15 +23,18 @@ const app = initializeApp({
 });
 
 export const auth = getAuth(app);
-void setPersistence(auth, browserLocalPersistence);
-
 export const db = initializeFirestore(app, {
   localCache: persistentLocalCache({
     tabManager: persistentMultipleTabManager(),
   }),
 });
 
+// IMPORTANTE: connect*Emulator precisa vir ANTES de qualquer operação
+// (setPersistence, getDoc, signIn...). Caso contrário o SDK fixa o endpoint
+// de produção e o emulator é silenciosamente ignorado.
 if (env.VITE_USE_EMULATORS) {
   connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
   connectFirestoreEmulator(db, "127.0.0.1", 8080);
 }
+
+void setPersistence(auth, browserLocalPersistence);

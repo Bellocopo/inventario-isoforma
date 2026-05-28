@@ -28,7 +28,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<Role | null>(null);
 
   useEffect(() => {
-    return onAuthStateChanged(auth, async (u) => {
+    let cancelled = false;
+
+    const apply = async (u: User | null) => {
+      if (cancelled) return;
       if (!u) {
         setUser(null);
         setRole(null);
@@ -36,10 +39,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
       const tokenResult = await u.getIdTokenResult();
+      if (cancelled) return;
       setUser(u);
       setRole(readRole(tokenResult.claims));
       setStatus("signed-in");
-    });
+    };
+
+    // authStateReady() resolve quando a persistência foi lida. É um caminho
+    // garantido para o estado inicial mesmo se o callback do
+    // onAuthStateChanged for perdido no double-mount do StrictMode.
+    void auth.authStateReady().then(() => apply(auth.currentUser));
+
+    const unsubscribe = onAuthStateChanged(auth, apply);
+    return () => {
+      cancelled = true;
+      unsubscribe();
+    };
   }, []);
 
   const value = useMemo<AuthContextValue>(
