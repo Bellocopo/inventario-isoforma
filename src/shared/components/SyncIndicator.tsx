@@ -1,6 +1,6 @@
 import { cn } from "@/shared/lib/utils";
 
-type SyncStatus = "online" | "syncing" | "offline";
+export type SyncStatus = "online" | "syncing" | "offline";
 
 interface SyncIndicatorProps {
   status?: SyncStatus;

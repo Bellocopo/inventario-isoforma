@@ -17,7 +17,7 @@ produção é implementado neste plano** — somente decisão e documentação.
    - Hospedagem GitHub Pages e gestão de segredos via GitHub Actions Secrets.
    - Estrutura de pastas (file-based routing).
    - Modelo de dados Firestore normalizado (`/catalog`, `/storage_locations`
-     + subcoleção `stock_items`, `/kardex`, `/users`).
+     - subcoleção `stock_items`, `/kardex`, `/users`).
    - Estratégia de autenticação + autorização (Firebase Auth + Custom Claims).
    - Esqueleto das regras do Firestore.
    - Estratégia de migração via script Node one-shot a partir de `legacy/db.json`.
@@ -27,24 +27,24 @@ produção é implementado neste plano** — somente decisão e documentação.
 
 ## Decisões registradas (resumo das escolhas do usuário)
 
-| Pergunta                            | Escolha                                                     |
-| ----------------------------------- | ----------------------------------------------------------- |
-| Build/framework                     | Vite + React + TypeScript                                   |
-| Hospedagem                          | GitHub Pages                                                |
-| Gestão de segredos do Firebase      | GitHub Actions Secrets (`VITE_FIREBASE_*`)                  |
-| App Check (reCAPTCHA v3)            | Adiado — registrado como melhoria futura                    |
-| Modelo de roles                     | Custom Claims do Firebase Auth                              |
-| Bootstrap de admins                 | Script CLI Node + Admin SDK (`scripts/set-role.ts`)         |
-| Schema Firestore                    | Coleções normalizadas por entidade                          |
-| Identidade do material              | UUID/auto-ID Firestore (estável a renomeações)              |
-| Estratégia de kardex/stock          | FK (`materialId`) + snapshot dos campos críticos            |
-| Modelo das ruas                     | `/storage_locations` doc por rua + `stock_items` subcoleção |
-| Migração dos dados atuais           | Script Node one-shot lendo `legacy/db.json`                 |
-| Router                              | TanStack Router file-based                                  |
-| Camada de dados (Firestore)         | Hooks custom com `onSnapshot` (sem TanStack Query)          |
-| State global do cliente             | Zustand (UI) + Context (Auth)                               |
-| Lib de export Excel                 | `exceljs`                                                   |
-| Nome da pasta legada                | `legacy/`                                                   |
+| Pergunta                       | Escolha                                                     |
+| ------------------------------ | ----------------------------------------------------------- |
+| Build/framework                | Vite + React + TypeScript                                   |
+| Hospedagem                     | GitHub Pages                                                |
+| Gestão de segredos do Firebase | GitHub Actions Secrets (`VITE_FIREBASE_*`)                  |
+| App Check (reCAPTCHA v3)       | Adiado — registrado como melhoria futura                    |
+| Modelo de roles                | Custom Claims do Firebase Auth                              |
+| Bootstrap de admins            | Script CLI Node + Admin SDK (`scripts/set-role.ts`)         |
+| Schema Firestore               | Coleções normalizadas por entidade                          |
+| Identidade do material         | UUID/auto-ID Firestore (estável a renomeações)              |
+| Estratégia de kardex/stock     | FK (`materialId`) + snapshot dos campos críticos            |
+| Modelo das ruas                | `/storage_locations` doc por rua + `stock_items` subcoleção |
+| Migração dos dados atuais      | Script Node one-shot lendo `legacy/db.json`                 |
+| Router                         | TanStack Router file-based                                  |
+| Camada de dados (Firestore)    | Hooks custom com `onSnapshot` (sem TanStack Query)          |
+| State global do cliente        | Zustand (UI) + Context (Auth)                               |
+| Lib de export Excel            | `exceljs`                                                   |
+| Nome da pasta legada           | `legacy/`                                                   |
 
 ## Itens explicitamente fora deste plano
 

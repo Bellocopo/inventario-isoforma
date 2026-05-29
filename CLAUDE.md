@@ -112,7 +112,7 @@ ou nos planos.
 | 004 | [Auth (login real, guard de rotas)](.claude/plans/004-auth.md)                                    | concluído           |
 | 005 | Validação pós-auth (checkpoint manual)                                                            | concluído           |
 | 006 | [Design system](.claude/plans/006-design-system.md)                                               | concluído           |
-| 007 | Catálogo (CRUD `/catalog`)                                                                        | pendente            |
+| 007 | [Catálogo (CRUD `/catalog`)](.claude/plans/007-catalog.md)                                        | em execução         |
 | 008 | Storage locations + stock items (Direito/Esquerdo)                                                | pendente            |
 | 009 | Áreas livres (Fora, Masters, Aditivos)                                                            | pendente            |
 | 010 | Kardex                                                                                            | pendente            |

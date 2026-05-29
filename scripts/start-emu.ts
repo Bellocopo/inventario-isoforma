@@ -1,17 +1,13 @@
 /**
- * Inicia o Firebase Emulator Suite com persistência de dados e roda o seed
- * automaticamente quando os emuladores ficarem prontos.
+ * Inicia o Firebase Emulator Suite e roda o seed automaticamente
+ * quando os emuladores ficarem prontos.
  *
  * Uso: npm run emu
  */
 
 import { spawn } from "node:child_process";
 
-const EMULATOR_ARGS = [
-  "emulators:start",
-  "--import=./emulator-data",
-  "--export-on-exit=./emulator-data",
-];
+const EMULATOR_ARGS = ["emulators:start"];
 
 const READY_SIGNAL = "All emulators ready!";
 
@@ -54,7 +50,7 @@ emu.stderr?.on("data", (chunk: Buffer) => {
   process.stderr.write(chunk);
 });
 
-// Repassa SIGINT/SIGTERM ao processo filho para que o export-on-exit rode
+// Repassa SIGINT/SIGTERM ao processo filho para shutdown limpo
 for (const sig of ["SIGINT", "SIGTERM"] as NodeJS.Signals[]) {
   process.on(sig, () => {
     emu.kill(sig);

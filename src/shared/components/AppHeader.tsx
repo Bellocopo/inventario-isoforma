@@ -4,16 +4,18 @@ import { Logo } from "./Logo";
 import { SyncIndicator } from "./SyncIndicator";
 import { ModeToggle } from "@/features/theme/ModeToggle";
 import { useAuth } from "@/features/auth/useAuth";
+import { useSyncStatus } from "@/shared/hooks/useSyncStatus";
 
 export function AppHeader() {
   const { displayName, signOutNow } = useAuth();
+  const syncStatus = useSyncStatus();
 
   return (
     <header className="bg-header text-header-foreground">
       {/* Desktop */}
       <div className="hidden h-14 items-center gap-4 px-4 sm:flex">
         <Logo />
-        <SyncIndicator status="online" />
+        <SyncIndicator status={syncStatus} />
         <div className="flex-1" />
         <ModeToggle />
         <span className="text-header-foreground/80 text-sm font-medium">
@@ -34,7 +36,7 @@ export function AppHeader() {
       <div className="flex flex-col gap-1.5 px-3 py-2 sm:hidden">
         <div className="flex items-center justify-between">
           <Logo compact />
-          <SyncIndicator status="online" />
+          <SyncIndicator status={syncStatus} />
         </div>
         <div className="flex items-center gap-2">
           <ModeToggle />

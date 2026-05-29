@@ -19,6 +19,10 @@ export default tseslint.config(
         "warn",
         { allowConstantExport: true, allowExportNames: ["Route"] },
       ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { varsIgnorePattern: "^_", argsIgnorePattern: "^_" },
+      ],
     },
   },
   eslintConfigPrettier,

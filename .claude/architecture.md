@@ -169,8 +169,8 @@ Catálogo unificado de resinas, masters e aditivos.
   embal: "SC" | "BB"; // saco / big-bag
   kg: number; // peso por unidade de embalagem
   categoria: "PADRAO" | "MASTER" | "ADITIVO";
-  colorCode: string | null; // hex (#RRGGBB) para masters/aditivos
-  fornecedor: string | null; // "innova", "unigel", ... (legenda de cor da UI)
+  colorCode: string | null; // hex (#RRGGBB) — exclusivo de MASTER
+  fornecedor: SupplierId | null; // tipado — bandeira de cor para PADRAO; null para MASTER/ADITIVO
   ativo: boolean; // soft-delete: false = obsoleto, não some do histórico
   createdAt: Timestamp;
   updatedAt: Timestamp;
@@ -193,11 +193,13 @@ Uma rua/área física. ID legível para facilitar regras e debug.
   area: "direito" | "esquerdo" | "fora" | "masters" | "aditivos";
   rua: string | null; // "A".."Z", "A1".."G1" para direito/esquerdo; null para áreas livres
   label: string; // nome amigável ("Direito A", "Doca", "Sala dos Masters - bloco 1")
-  fornecedorPadrao: string | null; // legenda de cor sugerida (apenas direito/esquerdo)
   ordem: number; // ordenação na UI
   createdAt: Timestamp;
 }
 ```
+
+> `fornecedorPadrao` foi removido — a cor da rua é **derivada** do
+> `fornecedor` do material em `stock_items` (resolver no Plano 008).
 
 IDs convencionados:
 

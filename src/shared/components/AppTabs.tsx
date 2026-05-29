@@ -7,6 +7,7 @@ import {
   FlaskConical,
   Clipboard,
   LayoutGrid,
+  BookMarked,
 } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
 
@@ -19,6 +20,7 @@ const TABS = [
   { label: "Aditivos", to: "/aditivos", icon: FlaskConical, exact: false },
   { label: "Kardex", to: "/kardex", icon: Clipboard, exact: false },
   { label: "Planilha", to: "/planilha", icon: LayoutGrid, exact: false },
+  { label: "Catálogo", to: "/catalogo", icon: BookMarked, exact: false },
 ] as const;
 
 export function AppTabs() {

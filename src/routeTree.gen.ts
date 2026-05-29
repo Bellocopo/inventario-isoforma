@@ -18,6 +18,7 @@ import { Route as AppKardexRouteImport } from './routes/_app/kardex'
 import { Route as AppForaRouteImport } from './routes/_app/fora'
 import { Route as AppEsquerdoRouteImport } from './routes/_app/esquerdo'
 import { Route as AppDireitoRouteImport } from './routes/_app/direito'
+import { Route as AppCatalogoRouteImport } from './routes/_app/catalogo'
 import { Route as AppAditivosRouteImport } from './routes/_app/aditivos'
 
 const LoginRoute = LoginRouteImport.update({
@@ -64,6 +65,11 @@ const AppDireitoRoute = AppDireitoRouteImport.update({
   path: '/direito',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCatalogoRoute = AppCatalogoRouteImport.update({
+  id: '/catalogo',
+  path: '/catalogo',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppAditivosRoute = AppAditivosRouteImport.update({
   id: '/aditivos',
   path: '/aditivos',
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/login': typeof LoginRoute
   '/aditivos': typeof AppAditivosRoute
+  '/catalogo': typeof AppCatalogoRoute
   '/direito': typeof AppDireitoRoute
   '/esquerdo': typeof AppEsquerdoRoute
   '/fora': typeof AppForaRoute
@@ -84,6 +91,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/aditivos': typeof AppAditivosRoute
+  '/catalogo': typeof AppCatalogoRoute
   '/direito': typeof AppDireitoRoute
   '/esquerdo': typeof AppEsquerdoRoute
   '/fora': typeof AppForaRoute
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/_app': typeof AppRouteWithChildren
   '/login': typeof LoginRoute
   '/_app/aditivos': typeof AppAditivosRoute
+  '/_app/catalogo': typeof AppCatalogoRoute
   '/_app/direito': typeof AppDireitoRoute
   '/_app/esquerdo': typeof AppEsquerdoRoute
   '/_app/fora': typeof AppForaRoute
@@ -111,6 +120,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/aditivos'
+    | '/catalogo'
     | '/direito'
     | '/esquerdo'
     | '/fora'
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/aditivos'
+    | '/catalogo'
     | '/direito'
     | '/esquerdo'
     | '/fora'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
     | '/_app'
     | '/login'
     | '/_app/aditivos'
+    | '/_app/catalogo'
     | '/_app/direito'
     | '/_app/esquerdo'
     | '/_app/fora'
@@ -212,6 +224,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDireitoRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/catalogo': {
+      id: '/_app/catalogo'
+      path: '/catalogo'
+      fullPath: '/catalogo'
+      preLoaderRoute: typeof AppCatalogoRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/aditivos': {
       id: '/_app/aditivos'
       path: '/aditivos'
@@ -224,6 +243,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppAditivosRoute: typeof AppAditivosRoute
+  AppCatalogoRoute: typeof AppCatalogoRoute
   AppDireitoRoute: typeof AppDireitoRoute
   AppEsquerdoRoute: typeof AppEsquerdoRoute
   AppForaRoute: typeof AppForaRoute
@@ -235,6 +255,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppAditivosRoute: AppAditivosRoute,
+  AppCatalogoRoute: AppCatalogoRoute,
   AppDireitoRoute: AppDireitoRoute,
   AppEsquerdoRoute: AppEsquerdoRoute,
   AppForaRoute: AppForaRoute,
