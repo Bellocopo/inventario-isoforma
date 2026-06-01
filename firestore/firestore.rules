@@ -14,11 +14,8 @@ service cloud.firestore {
     match /storage_locations/{locationId} {
       allow read:  if isSignedIn();
       allow write: if isAdmin();
-      match /stock_items/{itemId} {
-        allow read:           if isSignedIn();
-        allow create, update: if isAdmin();
-        allow delete:         if isAdmin();
-      }
+      // slots são array embutido no doc — sem subcoleção stock_items
+      // melhoria futura: validar request.resource.data.slots.size() <= 4
     }
 
     match /kardex/{logId} {

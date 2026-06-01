@@ -6,7 +6,7 @@
 
 Status: **vivo** — atualize ao tomar novas decisões transversais.
 
-Última revisão: 2026-05-28.
+Última revisão: 2026-06-01.
 
 ---
 
@@ -189,17 +189,32 @@ Notas:
 Uma rua/área física. ID legível para facilitar regras e debug.
 
 ```ts
-{
+interface Slot {
+  materialId: string;
+  materialSnapshot: {
+    tipo: string;
+    embal: "SC" | "BB";
+    kgUnit: number;
+    categoria: "PADRAO" | "MASTER" | "ADITIVO";
+    fornecedor: SupplierId | null; // p/ derivar cor sem buscar catálogo
+    colorCode: string | null; // p/ masters
+  };
+  quantidade: number;
+}
+
+interface StorageLocation {
   area: "direito" | "esquerdo" | "fora" | "masters" | "aditivos";
   rua: string | null; // "A".."Z", "A1".."G1" para direito/esquerdo; null para áreas livres
   label: string; // nome amigável ("Direito A", "Doca", "Sala dos Masters - bloco 1")
   ordem: number; // ordenação na UI
+  slots: Slot[]; // até 4; embutido no doc da rua (ver §5.3)
   createdAt: Timestamp;
+  updatedAt: Timestamp;
+  updatedBy: string; // uid
 }
 ```
 
-> `fornecedorPadrao` foi removido — a cor da rua é **derivada** do
-> `fornecedor` do material em `stock_items` (resolver no Plano 008).
+Cor da rua = `SUPPLIERS[slots[0]?.materialSnapshot.fornecedor ?? "none"]`.
 
 IDs convencionados:
 
@@ -207,27 +222,15 @@ IDs convencionados:
 - Áreas livres: `fora_<slug>`, `masters_<slug>`, `aditivos_<slug>` (slugs
   derivados do label ou auto-ID, decidir no plano de bootstrap).
 
-### 5.3 `/storage_locations/{locationId}/stock_items/{itemId}` (subcoleção)
+### 5.3 Slots embutidos (decisão Plano 008)
 
-Cada palete/lote em uma localização. **Um doc por slot**, em vez de array
-empacotado. Isso destrava updates atômicos e regras granulares.
+A subcoleção `stock_items` foi **removida** em favor de `slots: Slot[]`
+embutido no doc da rua (§5.2).
 
-```ts
-{
-  materialId: string; // FK -> /catalog
-  materialSnapshot: {
-    // congelado no momento da escrita (resiliência)
-    tipo: string;
-    embal: "SC" | "BB";
-    kgUnit: number;
-    categoria: "PADRAO" | "MASTER" | "ADITIVO";
-  }
-  quantidade: number; // nº de paletes/sacos
-  slot: number | null; // 1..4 para ruas com slots numerados; null para áreas livres
-  updatedAt: Timestamp;
-  updatedBy: string; // uid do usuário
-}
-```
+Justificativa: a rua é a unidade natural de edição (salva-se o doc inteiro
+no `onBlur`); o array é pequeno (≤ 4 slots); evita a necessidade de
+`collectionGroup` e queries secundárias. O modelo recria intencionalmente
+parte da granularidade do legado, mas sem o `JSON.stringify` monolítico.
 
 ### 5.4 `/kardex/{logId}`
 
@@ -329,12 +332,7 @@ service cloud.firestore {
     match /storage_locations/{locationId} {
       allow read:  if isSignedIn();
       allow write: if isAdmin();
-
-      match /stock_items/{itemId} {
-        allow read:   if isSignedIn();
-        allow create, update: if isAdmin();
-        allow delete: if isAdmin();
-      }
+      // slots são array embutido no doc — sem subcoleção stock_items
     }
 
     match /kardex/{logId} {
