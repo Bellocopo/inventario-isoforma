@@ -1,8 +1,11 @@
 import { useCallback, useMemo } from "react";
 import {
+  collection,
   doc,
+  addDoc,
   getDoc,
   updateDoc,
+  deleteDoc,
   query,
   orderBy,
   where,
@@ -91,5 +94,44 @@ export function useStorageMutations() {
     [user],
   );
 
-  return { setSlotMaterial, setSlotQuantidade };
+  const createLocation = useCallback(
+    (area: StorageArea, label: string) => {
+      void addDoc(collection(db, "storage_locations"), {
+        area,
+        rua: null,
+        label,
+        ordem: Date.now(),
+        slots: [],
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp(),
+        updatedBy: user?.uid ?? "",
+      }).catch(() => toast.error("Erro ao criar local."));
+    },
+    [user],
+  );
+
+  const setLocationLabel = useCallback(
+    (locationId: string, label: string) => {
+      void updateDoc(doc(db, "storage_locations", locationId), {
+        label,
+        updatedAt: serverTimestamp(),
+        updatedBy: user?.uid ?? "",
+      }).catch(() => toast.error("Erro ao renomear local."));
+    },
+    [user],
+  );
+
+  const deleteLocation = useCallback((locationId: string) => {
+    void deleteDoc(doc(db, "storage_locations", locationId)).catch(() =>
+      toast.error("Erro ao excluir local."),
+    );
+  }, []);
+
+  return {
+    setSlotMaterial,
+    setSlotQuantidade,
+    createLocation,
+    setLocationLabel,
+    deleteLocation,
+  };
 }

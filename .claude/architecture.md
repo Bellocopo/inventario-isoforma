@@ -6,7 +6,7 @@
 
 Status: **vivo** — atualize ao tomar novas decisões transversais.
 
-Última revisão: 2026-06-01.
+Última revisão: 2026-06-02.
 
 ---
 
@@ -186,7 +186,7 @@ Notas:
 
 ### 5.2 `/storage_locations/{locationId}`
 
-Uma rua/área física. ID legível para facilitar regras e debug.
+Uma rua/área física.
 
 ```ts
 interface Slot {
@@ -218,9 +218,11 @@ Cor da rua = `SUPPLIERS[slots[0]?.materialSnapshot.fornecedor ?? "none"]`.
 
 IDs convencionados:
 
-- Lados: `direito_A`, `direito_B1`, `esquerdo_M`, ... (formato `<area>_<rua>`).
-- Áreas livres: `fora_<slug>`, `masters_<slug>`, `aditivos_<slug>` (slugs
-  derivados do label ou auto-ID, decidir no plano de bootstrap).
+- Lados (Direito/Esquerdo): `direito_A`, `direito_B1`, `esquerdo_M`, ...
+  (formato `<area>_<rua>`). Pré-seedados; `rua` contém a letra da rua.
+- Áreas livres (Fora/Masters/Aditivos): **auto-ID Firestore** (`addDoc`).
+  `rua: null`; `label` guarda o nome livre editável ("Doca", "ESTOQUE DE
+  MASTER", etc.). `ordem: Date.now()` na criação — mais novo por último.
 
 ### 5.3 Slots embutidos (decisão Plano 008)
 

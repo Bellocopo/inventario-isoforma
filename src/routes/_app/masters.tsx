@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EmConstrucao } from "@/shared/components/EmConstrucao";
+import { FreeAreaPage } from "@/features/storage/FreeAreaPage";
 
 export const Route = createFileRoute("/_app/masters")({
-  component: () => <EmConstrucao label="Masters (plano 009)" />,
+  component: () => <FreeAreaPage area="masters" />,
 });
