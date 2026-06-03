@@ -6,7 +6,7 @@
 
 Status: **vivo** — atualize ao tomar novas decisões transversais.
 
-Última revisão: 2026-06-02.
+Última revisão: 2026-06-03.
 
 ---
 
@@ -259,11 +259,25 @@ excluir entradas individuais (espelha comportamento atual).
 }
 ```
 
-Índices necessários (compound):
+Gatilho: diff de quantidade em `setSlotQuantidade` — `delta = qtd - old`;
+ENTRADA se delta > 0, SAIDA se delta < 0; delta = 0 → sem log. Escrita
+atômica via `writeBatch` junto com a atualização do slot. Troca/limpeza
+de material **não** gera log (paridade legado).
 
-- `(materialId asc, timestamp desc)` — histórico por material.
-- `(locationId asc, timestamp desc)` — histórico por rua.
-- `timestamp desc` — listagem geral mais recente.
+Tela `/kardex`: cards de resumo (entradas/saídas/balanço da página),
+filtros server-side por material/local/tipo, tabela paginada com
+cursor-based pagination (`startAfter` + pilha de cursores;
+`getCountFromServer` para total de páginas), exclusão admin via
+`AlertDialog`.
+
+Índices compound em `firestore/firestore.indexes.json`:
+
+- `(materialId asc, timestamp desc)`
+- `(locationId asc, timestamp desc)`
+- `(tipo asc, timestamp desc)`
+- `(materialId asc, tipo asc, timestamp desc)`
+- `(locationId asc, tipo asc, timestamp desc)`
+- `timestamp desc` — índice single-field automático (listagem geral).
 
 ### 5.5 `/users/{uid}` (opcional, fase 2)
 

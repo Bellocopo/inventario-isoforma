@@ -6,6 +6,7 @@ import {
   getDoc,
   updateDoc,
   deleteDoc,
+  writeBatch,
   query,
   orderBy,
   where,
@@ -16,6 +17,10 @@ import { db } from "@/shared/lib/firebase";
 import { useFirestoreCollection } from "@/shared/hooks/useFirestoreCollection";
 import { useAuth } from "@/features/auth/useAuth";
 import { storageCollection, storageDoc } from "./firestore";
+import {
+  buildKardexEntry,
+  writeKardexEntryToBatch,
+} from "@/features/kardex/firestore";
 import type { Slot, StorageArea } from "./types";
 import type { Material } from "@/features/catalog/types";
 
@@ -29,7 +34,7 @@ export function useStorageArea(area: StorageArea) {
 }
 
 export function useStorageMutations() {
-  const { user } = useAuth();
+  const { user, displayName } = useAuth();
 
   const setSlotMaterial = useCallback(
     (locationId: string, slotIndex: number, material: Material | null) => {
@@ -81,17 +86,35 @@ export function useStorageMutations() {
         const slots: Slot[] = [...(snap.data().slots ?? [])];
         if (!slots[slotIndex]) return;
 
-        // TODO(010): log kardex no diff de quantidade
+        const old = slots[slotIndex].quantidade;
+        const delta = qtd - old;
         slots[slotIndex] = { ...slots[slotIndex], quantidade: qtd };
 
-        await updateDoc(doc(db, "storage_locations", locationId), {
+        const batch = writeBatch(db);
+        batch.update(doc(db, "storage_locations", locationId), {
           slots,
           updatedAt: serverTimestamp(),
           updatedBy: user?.uid ?? "",
         });
+
+        if (delta !== 0) {
+          writeKardexEntryToBatch(
+            batch,
+            buildKardexEntry({
+              slot: slots[slotIndex],
+              locationId,
+              locationLabel: snap.data().label,
+              delta,
+              userId: user?.uid ?? "",
+              userDisplay: displayName ?? "",
+            }),
+          );
+        }
+
+        await batch.commit();
       })().catch(() => toast.error("Erro ao atualizar quantidade."));
     },
-    [user],
+    [user, displayName],
   );
 
   const createLocation = useCallback(

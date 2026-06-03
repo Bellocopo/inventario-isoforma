@@ -115,7 +115,7 @@ ou nos planos.
 | 007 | [Catálogo (CRUD `/catalog`)](.claude/plans/007-catalog.md)                                          | concluído           |
 | 008 | [Storage locations + stock items (Direito/Esquerdo)](.claude/plans/008-storage-direito-esquerdo.md) | concluído           |
 | 009 | [Áreas livres (Fora, Masters, Aditivos)](.claude/plans/009-areas-livres-fora-masters-aditivos.md)   | concluído           |
-| 010 | Kardex                                                                                              | pendente            |
+| 010 | [Kardex](.claude/plans/010-kardex.md)                                                               | concluído           |
 | 011 | Dashboard + busca + regra ≤25kg                                                                     | pendente            |
 | 012 | Planilha Amarela + export Excel                                                                     | pendente            |
 | 013 | Migração `legacy/db.json` → Firestore                                                               | pendente            |
