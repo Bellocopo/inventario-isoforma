@@ -5,7 +5,9 @@
  *  - Usuários padrão (Auth)
  *  - Catálogo de materiais (dados reais do legacy/db.json)
  *  - Ruas Direito/Esquerdo com slots populados (dados reais do legacy/db.json)
+ *  - Áreas livres Fora/Masters/Aditivos (locais dinâmicos do legacy/db.json)
  *
+ * Kardex começa vazio (sem histórico migrado).
  * Idempotente: docs já existentes são ignorados.
  * Pode ser rodado standalone: npm run seed:emu
  * Ou é invocado automaticamente pelo start-emu.ts.
@@ -56,9 +58,7 @@ interface LegacyCatalogItem {
   categoria?: Categoria;
 }
 
-interface LegacyRua {
-  rua: string;
-  color: string;
+interface LegacySlots {
   resina1?: string;
   resina2?: string;
   resina3?: string;
@@ -67,6 +67,16 @@ interface LegacyRua {
   q2?: string;
   q3?: string;
   q4?: string;
+}
+
+interface LegacyRua extends LegacySlots {
+  rua: string;
+  color: string;
+}
+
+interface LegacyFreeItem extends LegacySlots {
+  id: number | string;
+  local: string;
 }
 
 // ── Seed de usuários ─────────────────────────────────────────────────────────
@@ -129,6 +139,7 @@ const RUAS = [
 ];
 
 const AREAS = ["direito", "esquerdo"] as const;
+const FREE_AREAS = ["fora", "masters", "aditivos"] as const;
 
 // ── Ler legacy/db.json ───────────────────────────────────────────────────────
 
@@ -153,6 +164,9 @@ function parseLegacyDb() {
     ) as LegacyCatalogItem[],
     direito: JSON.parse(doc.fields.direito.stringValue) as LegacyRua[],
     esquerdo: JSON.parse(doc.fields.esquerdo.stringValue) as LegacyRua[],
+    fora: JSON.parse(doc.fields.fora.stringValue) as LegacyFreeItem[],
+    masters: JSON.parse(doc.fields.masters.stringValue) as LegacyFreeItem[],
+    aditivos: JSON.parse(doc.fields.aditivos.stringValue) as LegacyFreeItem[],
   };
 }
 
@@ -250,6 +264,9 @@ const {
   catalogo,
   direito: direitoRuas,
   esquerdo: esquerdoRuas,
+  fora: foraItems,
+  masters: mastersItems,
+  aditivos: aditivosItems,
 } = parseLegacyDb();
 
 // Mapa "tipo|embal" → SupplierId (derivado das cores das ruas)
@@ -298,11 +315,11 @@ console.log(`  ${catCriadas} criados, ${catIgnoradas} ignorados.`);
 
 console.log("\nSeed storage_locations...");
 
-function buildSlots(rua: LegacyRua): object[] {
+function buildSlots(src: LegacySlots): object[] {
   const slots: object[] = [];
   for (let i = 1; i <= 4; i++) {
-    const resina = rua[`resina${i}` as keyof LegacyRua] as string | undefined;
-    const qStr = rua[`q${i}` as keyof LegacyRua] as string | undefined;
+    const resina = src[`resina${i}` as keyof LegacySlots];
+    const qStr = src[`q${i}` as keyof LegacySlots];
     if (!resina || !qStr) continue;
 
     const qty = parseInt(qStr, 10);
@@ -371,4 +388,46 @@ for (const area of AREAS) {
   }
 }
 console.log(`  ${locCriadas} ruas criadas (${locIgnoradas} ignoradas).`);
+
+// ── 4. Áreas livres (Fora / Masters / Aditivos) ──────────────────────────────
+
+console.log("\nSeed áreas livres (fora/masters/aditivos)...");
+
+const FREE_ITEMS: Record<(typeof FREE_AREAS)[number], LegacyFreeItem[]> = {
+  fora: foraItems,
+  masters: mastersItems,
+  aditivos: aditivosItems,
+};
+
+let freeCriadas = 0;
+let freeIgnoradas = 0;
+
+for (const area of FREE_AREAS) {
+  const items = FREE_ITEMS[area];
+
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    const id = `${area}_${item.id}`;
+    const ref = db.collection("storage_locations").doc(id);
+
+    if ((await ref.get()).exists) {
+      freeIgnoradas++;
+      continue;
+    }
+
+    await ref.set({
+      area,
+      rua: null,
+      label: item.local.trim(),
+      ordem: i,
+      slots: buildSlots(item),
+      updatedBy: "seed",
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+    freeCriadas++;
+  }
+}
+console.log(`  ${freeCriadas} locais criados (${freeIgnoradas} ignorados).`);
+
 console.log("\nSeed concluído.");

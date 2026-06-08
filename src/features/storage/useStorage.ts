@@ -33,6 +33,12 @@ export function useStorageArea(area: StorageArea) {
   return { locations, loading, error };
 }
 
+export function useAllStorage() {
+  const q = useMemo(() => query(storageCollection, orderBy("ordem")), []);
+  const { data: locations, loading, error } = useFirestoreCollection(q);
+  return { locations, loading, error };
+}
+
 export function useStorageMutations() {
   const { user, displayName } = useAuth();
 
