@@ -12,6 +12,7 @@ export interface ConsolidatedItem {
   colorCode: string | null;
   totalQtd: number; // Σ quantidade
   totalKg: number; // Σ quantidade * kgUnit
+  qtds: number[]; // quantidades individuais por slot (para a Planilha Amarela)
 }
 
 export interface DashboardKpis {

@@ -125,7 +125,7 @@ inventario-isoforma/
 │   │       ├── masters.tsx
 │   │       ├── aditivos.tsx
 │   │       ├── kardex.tsx
-│   │       ├── planilha-amarela.tsx
+│   │       ├── planilha.tsx
 │   │       └── catalogo.tsx
 │   ├── features/               # lógica de negócio colocada por feature
 │   │   ├── auth/               # AuthProvider, useAuth, role helpers
@@ -133,7 +133,7 @@ inventario-isoforma/
 │   │   ├── storage/            # ruas, paletes, mover/editar stock
 │   │   ├── kardex/             # listeners, escrita de logs, queries
 │   │   ├── dashboard/          # agregação client-side (KPIs, busca, posição)
-│   │   └── reports/            # geração de Excel (Planilha Amarela)
+│   │   └── reports/            # Planilha Amarela + export .xlsx (exceljs)
 │   ├── shared/
 │   │   ├── components/         # Modal, Button, Card, ConfirmDialog...
 │   │   ├── hooks/              # useFirestoreDoc, useFirestoreCollection
@@ -416,18 +416,18 @@ e popula o Firestore:
 
 ## 10. Mapeamento "feature legacy → onde fica agora"
 
-| Feature legacy (PDF §4)        | Rota nova           | Feature module                          |
-| ------------------------------ | ------------------- | --------------------------------------- |
-| 4.1 Dashboard Central          | `/` (em `_app`)     | `features/dashboard` (agrega `storage`) |
-| 4.2 Lado Direito               | `/direito`          | `features/storage`                      |
-| 4.2 Lado Esquerdo              | `/esquerdo`         | `features/storage`                      |
-| 4.3 Fora do Local              | `/fora`             | `features/storage`                      |
-| 4.3 Sala dos Masters           | `/masters`          | `features/storage`                      |
-| 4.3 Aditivos Químicos          | `/aditivos`         | `features/storage`                      |
-| 4.4 Kardex                     | `/kardex`           | `features/kardex`                       |
-| 4.5 Planilha Amarela + Excel   | `/planilha-amarela` | `features/reports`                      |
-| 4.5 Gerir Materiais Existentes | `/catalogo`         | `features/catalog`                      |
-| Login                          | `/login`            | `features/auth`                         |
+| Feature legacy (PDF §4)        | Rota nova       | Feature module                          |
+| ------------------------------ | --------------- | --------------------------------------- |
+| 4.1 Dashboard Central          | `/` (em `_app`) | `features/dashboard` (agrega `storage`) |
+| 4.2 Lado Direito               | `/direito`      | `features/storage`                      |
+| 4.2 Lado Esquerdo              | `/esquerdo`     | `features/storage`                      |
+| 4.3 Fora do Local              | `/fora`         | `features/storage`                      |
+| 4.3 Sala dos Masters           | `/masters`      | `features/storage`                      |
+| 4.3 Aditivos Químicos          | `/aditivos`     | `features/storage`                      |
+| 4.4 Kardex                     | `/kardex`       | `features/kardex`                       |
+| 4.5 Planilha Amarela + Excel   | `/planilha`     | `features/reports`                      |
+| 4.5 Gerir Materiais Existentes | `/catalogo`     | `features/catalog`                      |
+| Login                          | `/login`        | `features/auth`                         |
 
 Regra de negócio crítica do PDF (Paletes vs Sacos ≤ 25kg): centralizada em
 `shared/lib/business.ts` — `SACK_KG_THRESHOLD = 25`, `isSaco(kgUnit)`,
@@ -439,6 +439,16 @@ snapshots de `/storage_locations` (volume pequeno: ~50 locais × ≤4 slots).
 `aggregate.ts` é puro (`consolidate`/`computeKpis`/`findLocations`/
 `byCategoria`); `useDashboard()` memoiza sobre `useAllStorage()`. Sem
 agregação server-side.
+
+A **Planilha Amarela** (`features/reports/`, rota `/planilha`) reusa o mesmo
+`consolidate()`: `ConsolidatedItem.qtds` (array das quantidades individuais
+por slot) alimenta as **10 colunas QTD** — `buildPlanilha()` colapsa o
+excedente (>10 slots) na 10ª coluna e preenche o resto com `null`. Os totais
+da linha TOTAIS vêm de `computeKpis` (`volumePaletes` exclui sacos,
+`stockTotalKg`). O export é `.xlsx` **real via `exceljs`**
+(`exportExcel.ts`) — substitui o hack legado de HTML-como-`.xls`. O `exceljs`
+fica num chunk lazy (carregado só ao entrar em `/planilha`), fora do bundle
+inicial.
 
 ## 11. Decisões abertas / melhorias futuras
 

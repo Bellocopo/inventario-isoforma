@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { EmConstrucao } from "@/shared/components/EmConstrucao";
+import { PlanilhaPage } from "@/features/reports/PlanilhaPage";
 
 export const Route = createFileRoute("/_app/planilha")({
-  component: () => <EmConstrucao label="Planilha Amarela (plano 012)" />,
+  component: PlanilhaPage,
 });

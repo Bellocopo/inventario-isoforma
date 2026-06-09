@@ -25,6 +25,7 @@ export function consolidate(locations: StorageLocation[]): ConsolidatedItem[] {
       if (existing) {
         existing.totalQtd += slot.quantidade;
         existing.totalKg += slot.quantidade * snap.kgUnit;
+        existing.qtds.push(slot.quantidade);
       } else {
         byMaterial.set(slot.materialId, {
           materialId: slot.materialId,
@@ -36,6 +37,7 @@ export function consolidate(locations: StorageLocation[]): ConsolidatedItem[] {
           colorCode: snap.colorCode,
           totalQtd: slot.quantidade,
           totalKg: slot.quantidade * snap.kgUnit,
+          qtds: [slot.quantidade],
         });
       }
     }
