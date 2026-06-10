@@ -17,7 +17,9 @@
     "emu": "tsx --tsconfig tsconfig.scripts.json scripts/start-emu.ts",
     "seed:emu": "tsx --tsconfig tsconfig.scripts.json scripts/seed-emulator.ts",
     "rules:deploy": "firebase deploy --only firestore",
-    "set-role": "tsx --tsconfig tsconfig.scripts.json scripts/set-role.ts"
+    "set-role": "tsx --tsconfig tsconfig.scripts.json scripts/set-role.ts",
+    "migrate": "tsx --tsconfig tsconfig.scripts.json scripts/migrate-legacy-to-firestore.ts",
+    "users": "tsx --tsconfig tsconfig.scripts.json scripts/manage-users.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",

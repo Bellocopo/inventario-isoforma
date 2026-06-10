@@ -7,6 +7,9 @@
  *  - Ruas Direito/Esquerdo com slots populados (dados reais do legacy/db.json)
  *  - Áreas livres Fora/Masters/Aditivos (locais dinâmicos do legacy/db.json)
  *
+ * O mapeamento legacy → schema novo vive em scripts/lib/legacy.ts (canônico,
+ * compartilhado com a migração real). Aqui só fazemos a escrita no emulador.
+ *
  * Kardex começa vazio (sem histórico migrado).
  * Idempotente: docs já existentes são ignorados.
  * Pode ser rodado standalone: npm run seed:emu
@@ -14,7 +17,6 @@
  */
 
 import net from "node:net";
-import { readFileSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -25,6 +27,11 @@ import {
 } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import {
+  parseLegacyDb,
+  buildCatalogDocs,
+  buildStorageLocationDocs,
+} from "./lib/legacy.js";
 
 // ── Config ───────────────────────────────────────────────────────────────────
 
@@ -34,50 +41,6 @@ const PROJECT_ID = "inventario-isoforma";
 // Deve ser definido ANTES da inicialização do SDK
 process.env.FIREBASE_AUTH_EMULATOR_HOST = `localhost:${AUTH_PORT}`;
 process.env.FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080";
-
-// ── Types (inline — scripts/ não importa de src/) ────────────────────────────
-
-type SupplierId =
-  | "none"
-  | "innova"
-  | "amsty"
-  | "braskem"
-  | "essentia"
-  | "petrocuyo"
-  | "unigel"
-  | "estyrenics"
-  | "masterbatch";
-type Categoria = "PADRAO" | "MASTER" | "ADITIVO";
-type Embal = "SC" | "BB";
-
-interface LegacyCatalogItem {
-  tipo: string;
-  embal: Embal;
-  kg: number;
-  colorCode?: string | null;
-  categoria?: Categoria;
-}
-
-interface LegacySlots {
-  resina1?: string;
-  resina2?: string;
-  resina3?: string;
-  resina4?: string;
-  q1?: string;
-  q2?: string;
-  q3?: string;
-  q4?: string;
-}
-
-interface LegacyRua extends LegacySlots {
-  rua: string;
-  color: string;
-}
-
-interface LegacyFreeItem extends LegacySlots {
-  id: number | string;
-  local: string;
-}
 
 // ── Seed de usuários ─────────────────────────────────────────────────────────
 
@@ -101,115 +64,11 @@ const SEED_USERS: {
   },
 ];
 
-// ── Ruas fixas (ordem do legado) ─────────────────────────────────────────────
-
-const RUAS = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "O",
-  "P",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "V",
-  "X",
-  "Y",
-  "Z",
-  "A1",
-  "B1",
-  "C1",
-  "D1",
-  "E1",
-  "F1",
-  "G1",
-];
-
-const AREAS = ["direito", "esquerdo"] as const;
-const FREE_AREAS = ["fora", "masters", "aditivos"] as const;
-
-// ── Ler legacy/db.json ───────────────────────────────────────────────────────
+// ── Bootstrap ────────────────────────────────────────────────────────────────
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-function parseLegacyDb() {
-  const raw = readFileSync(
-    join(__dirname, "../legacy/db.json"),
-    "utf-8",
-  ).trim();
-  // O arquivo é um export do Firestore com wrapper inválido:
-  // { <doc> },\n  "targetIds": [4]\n}
-  // Extraímos só o objeto do documento.
-  const fixed = raw.replace(/,\s*\n\s*"targetIds"[\s\S]*$/, "");
-  const doc = JSON.parse(fixed) as {
-    fields: Record<string, { stringValue: string }>;
-  };
-  return {
-    catalogo: JSON.parse(
-      doc.fields.catalogo.stringValue,
-    ) as LegacyCatalogItem[],
-    direito: JSON.parse(doc.fields.direito.stringValue) as LegacyRua[],
-    esquerdo: JSON.parse(doc.fields.esquerdo.stringValue) as LegacyRua[],
-    fora: JSON.parse(doc.fields.fora.stringValue) as LegacyFreeItem[],
-    masters: JSON.parse(doc.fields.masters.stringValue) as LegacyFreeItem[],
-    aditivos: JSON.parse(doc.fields.aditivos.stringValue) as LegacyFreeItem[],
-  };
-}
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
-
-const VALID_SUPPLIER_IDS = new Set<string>([
-  "none",
-  "innova",
-  "amsty",
-  "braskem",
-  "essentia",
-  "petrocuyo",
-  "unigel",
-  "estyrenics",
-  "masterbatch",
-]);
-
-function toSupplierId(color: string): SupplierId {
-  return VALID_SUPPLIER_IDS.has(color) ? (color as SupplierId) : "none";
-}
-
-function inferCategoria(item: LegacyCatalogItem): Categoria {
-  if (item.categoria) return item.categoria;
-  const t = item.tipo.toUpperCase();
-  if (t.startsWith("MASTER")) return "MASTER";
-  if (t.startsWith("ADITIVO")) return "ADITIVO";
-  return "PADRAO";
-}
-
-function catalogDocId(tipo: string, embal: string): string {
-  return (
-    tipo
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]/g, "-")
-      .replace(/-+/g, "-")
-      .replace(/^-|-$/g, "") +
-    "_" +
-    embal.toLowerCase()
-  );
-}
-
-// ── Bootstrap ────────────────────────────────────────────────────────────────
+const DB_JSON_PATH = join(__dirname, "../legacy/db.json");
 
 async function waitForPort(port: number, timeout = 30_000): Promise<void> {
   const deadline = Date.now() + timeout;
@@ -257,53 +116,21 @@ for (const { email, password, displayName, role } of SEED_USERS) {
   await auth.setCustomUserClaims(uid, { role });
 }
 
-// ── 2. Catálogo ──────────────────────────────────────────────────────────────
+// ── 2. Dados (catálogo + storage_locations) ──────────────────────────────────
+
+const legacy = parseLegacyDb(DB_JSON_PATH);
 
 console.log("\nSeed catálogo...");
-const {
-  catalogo,
-  direito: direitoRuas,
-  esquerdo: esquerdoRuas,
-  fora: foraItems,
-  masters: mastersItems,
-  aditivos: aditivosItems,
-} = parseLegacyDb();
-
-// Mapa "tipo|embal" → SupplierId (derivado das cores das ruas)
-const supplierMap = new Map<string, SupplierId>();
-for (const rua of [...direitoRuas, ...esquerdoRuas]) {
-  const supplierId = toSupplierId(rua.color);
-  for (let i = 1; i <= 4; i++) {
-    const resina = rua[`resina${i}` as keyof LegacyRua] as string | undefined;
-    if (resina) supplierMap.set(resina, supplierId);
-  }
-}
-
-// Mapa "tipo|embal" → docId (para resolver slots)
-const catalogIdMap = new Map<string, string>();
 let catCriadas = 0;
 let catIgnoradas = 0;
-
-for (const item of catalogo) {
-  const key = `${item.tipo}|${item.embal}`;
-  const docId = catalogDocId(item.tipo, item.embal);
-  catalogIdMap.set(key, docId);
-
-  const ref = db.collection("catalog").doc(docId);
+for (const { id, data } of buildCatalogDocs(legacy)) {
+  const ref = db.collection("catalog").doc(id);
   if ((await ref.get()).exists) {
     catIgnoradas++;
     continue;
   }
-
-  const categoria = inferCategoria(item);
   await ref.set({
-    tipo: item.tipo,
-    embal: item.embal,
-    kg: item.kg,
-    categoria,
-    colorCode: item.colorCode ?? null,
-    fornecedor: categoria === "PADRAO" ? (supplierMap.get(key) ?? null) : null,
-    ativo: true,
+    ...data,
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
   });
@@ -311,123 +138,23 @@ for (const item of catalogo) {
 }
 console.log(`  ${catCriadas} criados, ${catIgnoradas} ignorados.`);
 
-// ── 3. Storage locations ─────────────────────────────────────────────────────
-
 console.log("\nSeed storage_locations...");
-
-function buildSlots(src: LegacySlots): object[] {
-  const slots: object[] = [];
-  for (let i = 1; i <= 4; i++) {
-    const resina = src[`resina${i}` as keyof LegacySlots];
-    const qStr = src[`q${i}` as keyof LegacySlots];
-    if (!resina || !qStr) continue;
-
-    const qty = parseInt(qStr, 10);
-    if (isNaN(qty) || qty <= 0) continue;
-
-    const materialId = catalogIdMap.get(resina);
-    if (!materialId) {
-      console.warn(`  warn  material não mapeado: ${resina}`);
-      continue;
-    }
-
-    const [tipo, embal] = resina.split("|") as [string, Embal];
-    const catalogItem = catalogo.find(
-      (c) => c.tipo === tipo && c.embal === embal,
-    );
-    if (!catalogItem) continue;
-
-    const categoria = inferCategoria(catalogItem);
-    slots.push({
-      materialId,
-      materialSnapshot: {
-        tipo,
-        embal,
-        kgUnit: catalogItem.kg,
-        categoria,
-        fornecedor:
-          categoria === "PADRAO" ? (supplierMap.get(resina) ?? null) : null,
-        colorCode: catalogItem.colorCode ?? null,
-      },
-      quantidade: qty,
-    });
-  }
-  return slots;
-}
-
 let locCriadas = 0;
 let locIgnoradas = 0;
-
-for (const area of AREAS) {
-  const ruaData = area === "direito" ? direitoRuas : esquerdoRuas;
-
-  for (let i = 0; i < RUAS.length; i++) {
-    const rua = RUAS[i];
-    const id = `${area}_${rua}`;
-    const ref = db.collection("storage_locations").doc(id);
-
-    if ((await ref.get()).exists) {
-      locIgnoradas++;
-      continue;
-    }
-
-    const legacyRua = ruaData.find((r) => r.rua === rua);
-    const slots = legacyRua ? buildSlots(legacyRua) : [];
-
-    await ref.set({
-      area,
-      rua,
-      label: `${area === "direito" ? "Direito" : "Esquerdo"} ${rua}`,
-      ordem: i,
-      slots,
-      updatedBy: "seed",
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-    });
-    locCriadas++;
+for (const { id, data } of buildStorageLocationDocs(legacy)) {
+  const ref = db.collection("storage_locations").doc(id);
+  if ((await ref.get()).exists) {
+    locIgnoradas++;
+    continue;
   }
+  await ref.set({
+    ...data,
+    updatedBy: "seed",
+    createdAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
+  });
+  locCriadas++;
 }
-console.log(`  ${locCriadas} ruas criadas (${locIgnoradas} ignoradas).`);
-
-// ── 4. Áreas livres (Fora / Masters / Aditivos) ──────────────────────────────
-
-console.log("\nSeed áreas livres (fora/masters/aditivos)...");
-
-const FREE_ITEMS: Record<(typeof FREE_AREAS)[number], LegacyFreeItem[]> = {
-  fora: foraItems,
-  masters: mastersItems,
-  aditivos: aditivosItems,
-};
-
-let freeCriadas = 0;
-let freeIgnoradas = 0;
-
-for (const area of FREE_AREAS) {
-  const items = FREE_ITEMS[area];
-
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i];
-    const id = `${area}_${item.id}`;
-    const ref = db.collection("storage_locations").doc(id);
-
-    if ((await ref.get()).exists) {
-      freeIgnoradas++;
-      continue;
-    }
-
-    await ref.set({
-      area,
-      rua: null,
-      label: item.local.trim(),
-      ordem: i,
-      slots: buildSlots(item),
-      updatedBy: "seed",
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
-    });
-    freeCriadas++;
-  }
-}
-console.log(`  ${freeCriadas} locais criados (${freeIgnoradas} ignorados).`);
+console.log(`  ${locCriadas} locais criados (${locIgnoradas} ignorados).`);
 
 console.log("\nSeed concluído.");

@@ -118,7 +118,7 @@ ou nos planos.
 | 010 | [Kardex](.claude/plans/010-kardex.md)                                                               | concluído           |
 | 011 | [Dashboard + busca + regra ≤25kg](.claude/plans/011-dashboard-busca-regra-25kg.md)                  | concluído           |
 | 012 | [Planilha Amarela + export Excel](.claude/plans/012-planilha-amarela-export-excel.md)               | concluído           |
-| 013 | Migração `legacy/db.json` → Firestore                                                               | pendente            |
+| 013 | [Migração `legacy/db.json` → Firestore](.claude/plans/013-migracao-legacy-db-json-firestore.md)     | concluído           |
 | 014 | Deploy GitHub Pages + Actions                                                                       | pendente            |
 | 015 | App Check                                                                                           | pendente            |
 
@@ -175,18 +175,21 @@ Pontos que valem reforço aqui porque guiam decisões do dia a dia:
 
 ## Comandos npm
 
-| Comando                                       | O que faz                                   |
-| --------------------------------------------- | ------------------------------------------- |
-| `npm run dev`                                 | Sobe Vite em http://localhost:3001          |
-| `npm run build`                               | Build de produção (`dist/`)                 |
-| `npm run typecheck`                           | Checa tipos sem emitir                      |
-| `npm run lint`                                | ESLint em todo o projeto                    |
-| `npm run format`                              | Prettier em todo o projeto                  |
-| `npm run emu`                                 | Sobe Firebase Emulator Suite                |
-| `npm run rules:deploy`                        | Deploy das regras Firestore no projeto prod |
-| `npm run set-role -- <email> <admin\|reader>` | Aplica custom claim via Admin SDK           |
+| Comando                                       | O que faz                                    |
+| --------------------------------------------- | -------------------------------------------- |
+| `npm run dev`                                 | Sobe Vite em http://localhost:3001           |
+| `npm run build`                               | Build de produção (`dist/`)                  |
+| `npm run typecheck`                           | Checa tipos sem emitir                       |
+| `npm run lint`                                | ESLint em todo o projeto                     |
+| `npm run format`                              | Prettier em todo o projeto                   |
+| `npm run emu`                                 | Sobe Firebase Emulator Suite                 |
+| `npm run rules:deploy`                        | Deploy das regras Firestore no projeto prod  |
+| `npm run set-role -- <email> <admin\|reader>` | Aplica custom claim via Admin SDK            |
+| `npm run migrate`                             | Migra `legacy/db.json` → Firestore (dry-run) |
 
-Para `set-role`, exportar `GOOGLE_APPLICATION_CREDENTIALS=secrets/service-account.json` antes.
+Para `set-role` e `migrate` em projeto real, exportar
+`GOOGLE_APPLICATION_CREDENTIALS=secrets/service-account.json` antes. `migrate` é
+dry-run por padrão; veja o README para `--commit`/`--yes`/`--emulator`.
 
 ## Quando começar uma sessão
 

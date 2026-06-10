@@ -6,7 +6,7 @@
 
 Status: **vivo** — atualize ao tomar novas decisões transversais.
 
-Última revisão: 2026-06-08.
+Última revisão: 2026-06-10.
 
 ---
 
@@ -377,25 +377,34 @@ create do kardex (campo a campo); validar transição de quantidade em
 
 ## 8. Migração de dados
 
-Script one-shot `scripts/migrate-legacy-to-firestore.ts` lê `legacy/db.json`
-e popula o Firestore:
+O mapeamento canônico `legacy/db.json` → schema novo vive em
+[`scripts/lib/legacy.ts`](../scripts/lib/legacy.ts) (funções puras, sem I/O de
+Firestore): `parseLegacyDb`, `buildSupplierMap`, `inferCategoria`,
+`catalogDocId`, `buildCatalogDocs`, `buildStorageLocationDocs`, `validateRefs`.
+Os builders retornam `{ id, data }` **sem** `serverTimestamp` — o writer injeta.
+É compartilhado por dois consumidores:
 
-1. **Catálogo**: cada item em `catalogo[]` vira doc em `/catalog`. Auto-ID.
-   Constrói um map `"{tipo}|{embal}" → materialId` para usar nas próximas
-   etapas. Infere `categoria` quando ausente (heurística: nome contém
-   "MASTER" → MASTER; "ADITIVO" → ADITIVO; senão PADRAO).
-2. **Storage locations**: para direito/esquerdo, cria um doc por rua
-   (`direito_A`, ...). Para fora/masters/aditivos, cria um doc por entrada
-   do array com slug derivado do `local`.
-3. **Stock items**: para cada rua/área, lê os campos `resina1..resina4` /
-   `q1..q4`, resolve materialId pelo map, e cria docs em
-   `stock_items` com `materialSnapshot` preenchido. Slots numerados
-   1..4 onde aplicável.
-4. **Validação**: o script imprime resumo (counts por coleção) e lista
-   referências não resolvidas (`tipo|embal` que não existe no catalog).
-5. **Dry-run**: flag `--dry-run` imprime tudo sem escrever. Default seguro.
-6. **Idempotência**: roda em projeto Firestore limpo, ou com flag `--purge`
-   limpa coleções alvo antes (decidir no plano de migração se vale).
+- **Seed do emulador** ([`scripts/seed-emulator.ts`](../scripts/seed-emulator.ts)):
+  skip-if-exists, também cria usuários no Auth.
+- **Migração real** ([`scripts/migrate-legacy-to-firestore.ts`](../scripts/migrate-legacy-to-firestore.ts)):
+  `npm run migrate`.
+
+Características da migração:
+
+1. **Catálogo**: cada item em `catalogo[]` vira doc em `/catalog` com ID
+   **determinístico** (`catalogDocId` = `tipo-slug_embal`). Infere `categoria`
+   quando ausente (nome começa com "MASTER"/"ADITIVO"; senão PADRAO).
+   `fornecedor` derivado da cor da rua (só PADRAO).
+2. **Storage locations**: direito/esquerdo → um doc por rua fixa (`<area>_<rua>`);
+   fora/masters/aditivos → um doc por entrada (`<area>_<legacyId>`, `rua: null`,
+   `label` livre). `slots[]` resolvido de `resina1..4`/`q1..4`.
+3. **Validação**: `validateRefs` confere integridade referencial e o script
+   imprime resumo (counts + refs resolvidas/ausentes).
+4. **Estratégia re-run**: **purge + recriar** `catalog` e `storage_locations`
+   (db.json = fonte da verdade; sem órfãos). **`kardex` nunca é tocado.**
+5. **Segurança**: `--dry-run` é o **default** (só imprime); escrita real exige
+   `--commit`, e em projeto real (não-emulador) exige também `--yes`. Flag
+   `--emulator` mira o emulador local.
 
 ## 9. Convenções
 
