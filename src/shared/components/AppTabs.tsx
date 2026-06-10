@@ -8,7 +8,15 @@ import {
   Clipboard,
   LayoutGrid,
   BookMarked,
+  ChevronDown,
+  Check,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/shared/components/ui/dropdown-menu";
 import { cn } from "@/shared/lib/utils";
 
 const TABS = [
@@ -31,16 +39,51 @@ export function AppTabs() {
     return location.pathname === to || location.pathname.startsWith(to + "/");
   }
 
+  const current = TABS.find((t) => isActive(t.to, t.exact)) ?? TABS[0];
+  const CurrentIcon = current.icon;
+
   return (
     <nav className="bg-background border-border border-b">
-      <ul
-        className="flex snap-x snap-mandatory scrollbar-none gap-1 overflow-x-auto px-2 sm:px-4"
-        role="tablist"
-      >
+      {/* Telas estreitas: dropdown com a rota atual */}
+      <div className="xl:hidden">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="text-foreground hover:bg-muted flex w-full items-center gap-2 px-4 py-2.5 text-sm font-medium outline-none">
+            <CurrentIcon className="text-primary size-4 shrink-0" />
+            <span className="truncate">{current.label}</span>
+            <ChevronDown className="text-muted-foreground ml-auto size-4 shrink-0" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className="w-[var(--radix-dropdown-menu-trigger-width)]"
+          >
+            {TABS.map(({ label, to, icon: Icon, exact }) => {
+              const active = isActive(to, exact);
+              return (
+                <DropdownMenuItem key={to} asChild>
+                  <Link
+                    to={to as never}
+                    className={cn(
+                      "flex cursor-pointer items-center gap-2",
+                      active && "text-primary font-medium",
+                    )}
+                  >
+                    <Icon className="size-4 shrink-0" />
+                    <span className="flex-1 truncate">{label}</span>
+                    {active && <Check className="size-4 shrink-0" />}
+                  </Link>
+                </DropdownMenuItem>
+              );
+            })}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Telas largas: barra de abas horizontal */}
+      <ul className="hidden gap-1 px-4 xl:flex" role="tablist">
         {TABS.map(({ label, to, icon: Icon, exact }) => {
           const active = isActive(to, exact);
           return (
-            <li key={to} className="shrink-0 snap-start" role="none">
+            <li key={to} className="shrink-0" role="none">
               <Link
                 to={to as never}
                 className={cn(

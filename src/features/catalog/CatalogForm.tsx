@@ -139,7 +139,7 @@ export function CatalogForm({
                 <RadioGroup
                   value={field.value}
                   onValueChange={field.onChange}
-                  className="flex gap-4"
+                  className="flex flex-col gap-2 sm:flex-row sm:gap-4"
                 >
                   {(["PADRAO", "MASTER", "ADITIVO"] as const).map((cat) => (
                     <div key={cat} className="flex items-center gap-1.5">
@@ -159,13 +159,13 @@ export function CatalogForm({
           )}
         />
 
-        <div className="flex flex-wrap items-end gap-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
           {/* Tipo */}
           <FormField
             control={form.control}
             name="tipo"
             render={({ field }) => (
-              <FormItem className="min-w-[180px] flex-1">
+              <FormItem className="w-full sm:min-w-[180px] sm:flex-1">
                 <FormLabel className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
                   Tipo
                 </FormLabel>
@@ -184,54 +184,57 @@ export function CatalogForm({
             )}
           />
 
-          {/* Embal */}
-          <FormField
-            control={form.control}
-            name="embal"
-            render={({ field }) => (
-              <FormItem className="w-24">
-                <FormLabel className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
-                  Embal
-                </FormLabel>
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                  </FormControl>
-                  <SelectContent>
-                    <SelectItem value="SC">SC</SelectItem>
-                    <SelectItem value="BB">BB</SelectItem>
-                  </SelectContent>
-                </Select>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+          {/* Embal + KG: mesma linha 50/50 no mobile, inline no desktop */}
+          <div className="flex gap-3 sm:contents">
+            {/* Embal */}
+            <FormField
+              control={form.control}
+              name="embal"
+              render={({ field }) => (
+                <FormItem className="w-1/2 sm:w-24">
+                  <FormLabel className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                    Embal
+                  </FormLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="SC">SC</SelectItem>
+                      <SelectItem value="BB">BB</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
 
-          {/* KG */}
-          <FormField
-            control={form.control}
-            name="kg"
-            render={({ field: { onChange, value, ...field } }) => (
-              <FormItem className="w-28">
-                <FormLabel className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
-                  KG
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    {...field}
-                    type="number"
-                    min={0}
-                    step={0.1}
-                    value={value}
-                    onChange={(e) => onChange(e.target.valueAsNumber)}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+            {/* KG */}
+            <FormField
+              control={form.control}
+              name="kg"
+              render={({ field: { onChange, value, ...field } }) => (
+                <FormItem className="w-1/2 sm:w-28">
+                  <FormLabel className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
+                    KG
+                  </FormLabel>
+                  <FormControl>
+                    <Input
+                      {...field}
+                      type="number"
+                      min={0}
+                      step={0.1}
+                      value={value}
+                      onChange={(e) => onChange(e.target.valueAsNumber)}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           {/* Cor / Fornecedor condicional */}
           {categoria === "PADRAO" && (
@@ -239,7 +242,7 @@ export function CatalogForm({
               control={form.control}
               name="fornecedor"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="w-full sm:w-auto">
                   <FormLabel className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
                     Fornecedor
                   </FormLabel>
@@ -247,6 +250,7 @@ export function CatalogForm({
                     <SupplierSelect
                       value={(field.value as SupplierId) ?? "none"}
                       onChange={(v) => field.onChange(v)}
+                      className="w-full sm:w-36"
                     />
                   </FormControl>
                   <FormMessage />

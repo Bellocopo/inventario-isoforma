@@ -37,8 +37,9 @@ export function FilledSlotRow({
   const [qty, setQty] = useState(slot.quantidade);
 
   return (
-    <div className="flex items-center gap-2">
-      <div className="min-w-0 flex-1">
+    <div className="flex flex-col gap-1">
+      {/* Seletor / nome — largura cheia do card para mostrar o nome completo */}
+      <div className="min-w-0">
         {isAdmin ? (
           <MaterialCombobox
             value={slot.materialId}
@@ -46,7 +47,7 @@ export function FilledSlotRow({
             onSelect={(m) => onSelectMaterial(slotIndex, m)}
           />
         ) : (
-          <div className="flex h-8 items-center gap-1.5 truncate px-2 text-sm">
+          <div className="flex h-8 items-center gap-1.5 px-2 text-sm">
             <span
               className="inline-block size-3 shrink-0 rounded-sm border border-black/10"
               style={{ backgroundColor: slotSwatchColor(slot) }}
@@ -55,24 +56,30 @@ export function FilledSlotRow({
           </div>
         )}
       </div>
-      {isAdmin ? (
-        <input
-          type="number"
-          min={0}
-          value={qty}
-          onChange={(e) => setQty(Number(e.currentTarget.value))}
-          onBlur={() => {
-            if (!isNaN(qty) && qty >= 0) onSaveQty(slotIndex, qty);
-          }}
-          className="border-input bg-background h-8 w-16 rounded-md border px-2 text-right text-sm tabular-nums shadow-sm"
+      {/* Quantidade (esquerda, 50%) + embalagem + peso (direita) */}
+      <div className="flex items-center gap-2">
+        {isAdmin ? (
+          <input
+            type="number"
+            min={0}
+            value={qty}
+            onChange={(e) => setQty(Number(e.currentTarget.value))}
+            onBlur={() => {
+              if (!isNaN(qty) && qty >= 0) onSaveQty(slotIndex, qty);
+            }}
+            className="border-input bg-background h-8 w-1/2 rounded-md border px-2 text-left text-sm tabular-nums shadow-sm"
+          />
+        ) : (
+          <span className="w-1/2 text-left text-sm tabular-nums">{qty}</span>
+        )}
+        <EmbalBadge
+          type={slot.materialSnapshot.embal}
+          className="ml-auto shrink-0"
         />
-      ) : (
-        <span className="w-16 text-right text-sm tabular-nums">{qty}</span>
-      )}
-      <EmbalBadge type={slot.materialSnapshot.embal} className="shrink-0" />
-      <span className="text-muted-foreground w-24 shrink-0 text-right text-xs tabular-nums">
-        {formatKg(qty, slot.materialSnapshot.kgUnit)}
-      </span>
+        <span className="text-muted-foreground shrink-0 text-right text-xs tabular-nums">
+          {formatKg(qty, slot.materialSnapshot.kgUnit)}
+        </span>
+      </div>
     </div>
   );
 }

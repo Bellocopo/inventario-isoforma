@@ -154,8 +154,8 @@ export function CatalogList() {
   return (
     <div className="space-y-4">
       {/* Filtros */}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative min-w-[160px] flex-1">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="relative w-full sm:min-w-[160px] sm:flex-1">
           <Search className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 h-4 w-4 -translate-y-1/2" />
           <Input
             placeholder="Buscar por tipo…"
@@ -169,7 +169,7 @@ export function CatalogList() {
           value={categoriaFilter}
           onValueChange={(v) => setCategoriaFilter(v as typeof categoriaFilter)}
         >
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-full sm:w-36">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

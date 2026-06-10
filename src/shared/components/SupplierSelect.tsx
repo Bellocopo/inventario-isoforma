@@ -10,17 +10,20 @@ import {
   SUPPLIER_IDS,
   type SupplierId,
 } from "@/shared/lib/suppliers";
+import { cn } from "@/shared/lib/utils";
 
 interface SupplierSelectProps {
   value: SupplierId;
   onChange: (value: SupplierId) => void;
   disabled?: boolean;
+  className?: string;
 }
 
 export function SupplierSelect({
   value,
   onChange,
   disabled,
+  className,
 }: SupplierSelectProps) {
   const current = SUPPLIERS[value];
 
@@ -31,7 +34,7 @@ export function SupplierSelect({
       disabled={disabled}
     >
       <SelectTrigger
-        className="h-8 w-36 border-0 text-xs font-medium"
+        className={cn("h-8 w-36 border-0 text-xs font-medium", className)}
         style={{ backgroundColor: current.bg, color: current.fg }}
       >
         <SelectValue />

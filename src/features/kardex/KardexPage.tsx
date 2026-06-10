@@ -183,7 +183,7 @@ export function KardexPage() {
       </div>
 
       {/* Summary cards */}
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
         <Card className="py-4">
           <CardHeader className="pb-1">
             <CardTitle className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
@@ -226,8 +226,8 @@ export function KardexPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-end gap-2">
-        <div className="w-56">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-end">
+        <div className="w-full sm:w-56">
           <MaterialCombobox
             value={filters.materialId ?? null}
             onSelect={(m: Material | null) =>
@@ -236,7 +236,7 @@ export function KardexPage() {
           />
         </div>
 
-        <div className="w-48">
+        <div className="w-full sm:w-48">
           <LocationCombobox
             value={filters.locationId ?? null}
             onSelect={(id) =>
@@ -254,7 +254,7 @@ export function KardexPage() {
             }))
           }
         >
-          <SelectTrigger className="w-36">
+          <SelectTrigger className="w-full sm:w-36">
             <SelectValue placeholder="Tipo" />
           </SelectTrigger>
           <SelectContent>
