@@ -10,6 +10,9 @@ import "./styles/globals.css";
 
 const router = createRouter({
   routeTree,
+  // sob GitHub Pages o app vive em /inventario-isoforma/; em dev, na raiz.
+  // BASE_URL vem do `base` do Vite (com barra final, removida aqui).
+  basepath: import.meta.env.BASE_URL.replace(/\/$/, ""),
   // contexto preenchido em runtime pelo InnerRouter via RouterProvider
   context: { auth: undefined as unknown as AuthContextValue },
   defaultPreload: "intent",

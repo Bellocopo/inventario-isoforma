@@ -6,7 +6,7 @@
 
 Status: **vivo** — atualize ao tomar novas decisões transversais.
 
-Última revisão: 2026-06-10.
+Última revisão: 2026-06-10 (deploy GH Pages).
 
 ---
 
@@ -63,14 +63,22 @@ Versões fixadas no `package.json` quando o plano de bootstrap rodar.
 
 ## 3. Hospedagem, build e segredos
 
-- **GitHub Pages** serve o build estático. SPA precisa de fallback de 404 → o
-  build copia `index.html` para `404.html` (truque padrão GH Pages).
-- **GitHub Actions** roda `pnpm install && pnpm build` em push para `main` e
-  publica `dist/` no branch `gh-pages` (ou via deploy oficial do Pages action).
+- **GitHub Pages (project page)** serve o build estático em
+  `https://bellocopo.github.io/inventario-isoforma/`. Como o app vive sob o
+  subcaminho `/inventario-isoforma/`, o Vite usa `base` (só no build) e o
+  TanStack Router usa `basepath` (`import.meta.env.BASE_URL`). SPA em history
+  mode precisa de fallback → um plugin no build copia `index.html` para
+  `404.html` (truque padrão GH Pages: deep-links/refresh reidratam a SPA).
+- **GitHub Actions** ([.github/workflows/deploy.yml](../.github/workflows/deploy.yml))
+  roda `npm ci && npm run build` em push para `main` (e `workflow_dispatch`) e
+  publica via **deploy oficial do Pages** (`upload-pages-artifact` +
+  `deploy-pages`) — sem branch `gh-pages`. Source do Pages = "GitHub Actions".
 - **Segredos:** variáveis `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`,
   `VITE_FIREBASE_PROJECT_ID`, `VITE_FIREBASE_STORAGE_BUCKET`,
   `VITE_FIREBASE_MESSAGING_SENDER_ID`, `VITE_FIREBASE_APP_ID` ficam em GitHub
-  Secrets e são injetadas no step de build. **Não** ficam no repo.
+  **Repository secrets** (não Environment — o job `build` não declara
+  `environment`) e são injetadas no step de build. **Não** ficam no repo.
+  `bellocopo.github.io` precisa estar nos **domínios autorizados** do Auth.
 - **Realidade da `apiKey`:** Firebase Web API Key é pública por design — quem
   baixar o JS do site sempre vai vê-la. A defesa real são (a) **regras
   Firestore estritas**, (b) **domínios autorizados** no console Firebase

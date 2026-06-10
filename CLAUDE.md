@@ -119,7 +119,7 @@ ou nos planos.
 | 011 | [Dashboard + busca + regra ≤25kg](.claude/plans/011-dashboard-busca-regra-25kg.md)                  | concluído           |
 | 012 | [Planilha Amarela + export Excel](.claude/plans/012-planilha-amarela-export-excel.md)               | concluído           |
 | 013 | [Migração `legacy/db.json` → Firestore](.claude/plans/013-migracao-legacy-db-json-firestore.md)     | concluído           |
-| 014 | Deploy GitHub Pages + Actions                                                                       | pendente            |
+| 014 | [Deploy GitHub Pages + Actions](.claude/plans/014-deploy-github-pages-actions.md)                   | concluído           |
 | 015 | App Check                                                                                           | pendente            |
 
 Roadmap completo em [.claude/architecture.md §12](.claude/architecture.md).
@@ -131,11 +131,18 @@ inventario-isoforma/
 ├── .claude/
 │   ├── architecture.md            # referência viva
 │   └── plans/                     # planos numerados
+├── .github/
+│   └── workflows/
+│       └── deploy.yml             # build + deploy GitHub Pages
 ├── firestore/
 │   ├── firestore.rules            # regras de segurança (versionadas)
 │   └── firestore.indexes.json
 ├── legacy/                        # sistema antigo (read-only, referência)
 ├── scripts/
+│   ├── lib/legacy.ts              # mapeamento legacy → schema (canônico)
+│   ├── migrate-legacy-to-firestore.ts  # migração real (purge+recriar)
+│   ├── manage-users.ts            # CLI de usuários (Auth + claims)
+│   ├── seed-emulator.ts           # seed do emulador
 │   └── set-role.ts                # promove custom claim via Admin SDK
 ├── src/
 │   ├── features/                  # domínios de negócio

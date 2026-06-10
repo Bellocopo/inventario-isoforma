@@ -108,6 +108,36 @@ npm run migrate -- --commit --yes
 No Windows (PowerShell), exporte a credencial com
 `$env:GOOGLE_APPLICATION_CREDENTIALS="secrets/service-account.json"`.
 
+## Deploy (GitHub Pages)
+
+O app é publicado automaticamente em
+**https://bellocopo.github.io/inventario-isoforma/** pelo workflow
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) a cada push na
+`main` (ou via "Run workflow" manual). Build com `npm ci && npm run build` e
+publicação pelo deploy oficial do Pages (sem branch `gh-pages`).
+
+Como o app vive sob o subcaminho `/inventario-isoforma/`, o Vite usa `base` e o
+router usa `basepath` no build; um plugin copia `index.html` → `404.html` para
+que deep-links/refresh (history mode) reidratem a SPA em vez de dar 404.
+
+**Configuração única (uma vez):**
+
+1. **Repository secrets** (Settings → Secrets and variables → Actions →
+   _Repository secrets_) — os 6 valores do `firebaseConfig` (Firebase Console →
+   Project settings → Your apps → Web):
+   `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`,
+   `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`,
+   `VITE_FIREBASE_APP_ID`. Use _Repository_ (não _Environment_): o job `build`
+   não declara `environment` e não enxergaria secrets de environment.
+2. **Pages source** (Settings → Pages → Build and deployment → Source):
+   **GitHub Actions**.
+3. **Authorized domains** (Firebase Console → Authentication → Settings →
+   Authorized domains): adicionar `bellocopo.github.io` (senão o login falha com
+   `auth/unauthorized-domain`).
+
+`VITE_USE_EMULATORS` não é definido no CI → default `false` (produção usa o
+Firebase real).
+
 ## Deploy de regras Firestore
 
 ```bash
