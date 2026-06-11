@@ -24,12 +24,6 @@ const app = initializeApp({
 
 export const auth = getAuth(app);
 export const db = initializeFirestore(app, {
-  // experimentalAutoDetectLongPolling (default) não capta proxies/firewalls
-  // que bufferizam o streaming: o canal Listen/channel fica preso e o
-  // onSnapshot para de receber updates em tempo real. Forçar long-polling
-  // fecha cada resposta na entrega e atravessa esses ambientes de forma
-  // confiável.
-  experimentalForceLongPolling: true,
   localCache: persistentLocalCache({
     tabManager: persistentMultipleTabManager(),
   }),
