@@ -32,6 +32,7 @@ export function useFirestoreCollection<T>(query: Query<T> | null): {
         });
       },
       (err) => {
+        console.error("[useFirestoreCollection] listener error:", err);
         setState((prev) => ({ ...prev, query, error: err }));
       },
     );
