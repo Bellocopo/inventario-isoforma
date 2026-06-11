@@ -1,3 +1,5 @@
+import type { Slot } from "@/features/storage/types";
+import { db } from "@/shared/lib/firebase";
 import {
   collection,
   doc,
@@ -10,9 +12,7 @@ import {
   type SnapshotOptions,
   type WriteBatch,
 } from "firebase/firestore";
-import { db } from "@/shared/lib/firebase";
 import type { KardexEntry, KardexEntryInput, KardexTipo } from "./types";
-import type { Slot } from "@/features/storage/types";
 
 const kardexConverter: FirestoreDataConverter<KardexEntry> = {
   toFirestore(entry: KardexEntry): DocumentData {
@@ -100,4 +100,4 @@ export function writeKardexEntryToBatch(
   });
 }
 
-export { writeBatch, serverTimestamp };
+export { serverTimestamp, writeBatch };

@@ -22,9 +22,9 @@
  * getIdToken(true)) para a claim entrar em vigor.
  */
 
-import { existsSync } from "node:fs";
 import { applicationDefault, getApps, initializeApp } from "firebase-admin/app";
 import { getAuth, type UserRecord } from "firebase-admin/auth";
+import { existsSync } from "node:fs";
 
 const PROJECT_ID = "inventario-isoforma";
 const ROLES = ["admin", "reader"] as const;

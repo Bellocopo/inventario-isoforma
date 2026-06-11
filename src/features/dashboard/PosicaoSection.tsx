@@ -1,15 +1,15 @@
-import type { LucideIcon } from "lucide-react";
+import { EmbalBadge } from "@/shared/components/EmbalBadge";
+import { Badge } from "@/shared/components/ui/badge";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { Badge } from "@/shared/components/ui/badge";
-import { EmbalBadge } from "@/shared/components/EmbalBadge";
-import { SUPPLIERS } from "@/shared/lib/suppliers";
 import { unitLabel } from "@/shared/lib/business";
+import { SUPPLIERS } from "@/shared/lib/suppliers";
 import { cn } from "@/shared/lib/utils";
+import type { LucideIcon } from "lucide-react";
 import type { ConsolidatedItem } from "./types";
 
 type PosicaoVariant = "neutral" | "masters" | "aditivos";

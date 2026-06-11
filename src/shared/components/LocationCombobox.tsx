@@ -1,12 +1,4 @@
-import { useMemo, useState } from "react";
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { orderBy, query } from "firebase/firestore";
-import { cn } from "@/shared/lib/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/components/ui/popover";
+import { storageCollection } from "@/features/storage/firestore";
 import {
   Command,
   CommandEmpty,
@@ -15,8 +7,16 @@ import {
   CommandItem,
   CommandList,
 } from "@/shared/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
 import { useFirestoreCollection } from "@/shared/hooks/useFirestoreCollection";
-import { storageCollection } from "@/features/storage/firestore";
+import { cn } from "@/shared/lib/utils";
+import { orderBy, query } from "firebase/firestore";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 
 interface LocationComboboxProps {
   value: string | null;

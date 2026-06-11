@@ -1,11 +1,6 @@
-import { useState, useMemo } from "react";
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
-import { cn } from "@/shared/lib/utils";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/components/ui/popover";
+import type { Categoria, Material } from "@/features/catalog/types";
+import { useCatalog } from "@/features/catalog/useCatalog";
+import { EmbalBadge } from "@/shared/components/EmbalBadge";
 import {
   Command,
   CommandEmpty,
@@ -14,10 +9,15 @@ import {
   CommandItem,
   CommandList,
 } from "@/shared/components/ui/command";
-import { EmbalBadge } from "@/shared/components/EmbalBadge";
-import { useCatalog } from "@/features/catalog/useCatalog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/shared/components/ui/popover";
 import { SUPPLIERS } from "@/shared/lib/suppliers";
-import type { Categoria, Material } from "@/features/catalog/types";
+import { cn } from "@/shared/lib/utils";
+import { CheckIcon, ChevronsUpDownIcon } from "lucide-react";
+import { useMemo, useState } from "react";
 
 interface MaterialComboboxProps {
   value: string | null;

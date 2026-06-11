@@ -57,7 +57,7 @@ export function StorageAreaPage({ area }: StorageAreaPageProps) {
         </div>
         {!loading && total > 0 && (
           <span
-            className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold${allDone ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400" : "bg-muted text-muted-foreground"}`}
+            className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold ${allDone ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400" : "bg-muted text-muted-foreground"}`}
           >
             {conferidas}/{total} conferidas hoje
           </span>

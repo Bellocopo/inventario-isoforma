@@ -1,6 +1,6 @@
-import { isPalete } from "@/shared/lib/business";
 import type { Categoria } from "@/features/catalog/types";
 import type { StorageArea, StorageLocation } from "@/features/storage/types";
+import { isPalete } from "@/shared/lib/business";
 import type {
   ConsolidatedItem,
   DashboardKpis,

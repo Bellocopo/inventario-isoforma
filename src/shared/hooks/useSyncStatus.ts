@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
-import { collection, onSnapshot, query } from "firebase/firestore";
-import { db } from "@/shared/lib/firebase";
 import type { SyncStatus } from "@/shared/components/SyncIndicator";
+import { db } from "@/shared/lib/firebase";
+import { collection, onSnapshot, query } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
 const INITIAL_TIMEOUT_MS = 6000; // sem contato com servidor após mount
 const RECONNECT_TIMEOUT_MS = 4000; // perdeu contato após já ter conectado

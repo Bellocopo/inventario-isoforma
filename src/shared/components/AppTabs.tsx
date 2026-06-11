@@ -1,16 +1,3 @@
-import { Link, useRouterState } from "@tanstack/react-router";
-import {
-  BarChart3,
-  Menu,
-  MapPin,
-  Droplet,
-  FlaskConical,
-  Clipboard,
-  LayoutGrid,
-  BookMarked,
-  ChevronDown,
-  Check,
-} from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +5,19 @@ import {
   DropdownMenuTrigger,
 } from "@/shared/components/ui/dropdown-menu";
 import { cn } from "@/shared/lib/utils";
+import { Link, useRouterState } from "@tanstack/react-router";
+import {
+  BarChart3,
+  BookMarked,
+  Check,
+  ChevronDown,
+  Clipboard,
+  Droplet,
+  FlaskConical,
+  LayoutGrid,
+  MapPin,
+  Menu,
+} from "lucide-react";
 
 const TABS = [
   { label: "Painel", to: "/", icon: BarChart3, exact: true },

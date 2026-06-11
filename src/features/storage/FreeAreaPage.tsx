@@ -1,9 +1,9 @@
-import { useState } from "react";
-import { AddRow } from "@/shared/components/AddRow";
 import { useRole } from "@/features/auth/useRole";
-import { useStorageArea, useStorageMutations } from "./useStorage";
+import { AddRow } from "@/shared/components/AddRow";
+import { useState } from "react";
 import { LocalCard } from "./LocalCard";
 import type { Categoria, StorageArea } from "./types";
+import { useStorageArea, useStorageMutations } from "./useStorage";
 
 type FreeArea = "fora" | "masters" | "aditivos";
 type FreeAreaVariant = "neutral" | "masters" | "aditivos";

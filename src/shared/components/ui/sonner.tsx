@@ -1,3 +1,4 @@
+import { useTheme } from "@/features/theme/theme-provider";
 import {
   CircleCheckIcon,
   InfoIcon,
@@ -5,7 +6,6 @@ import {
   OctagonXIcon,
   TriangleAlertIcon,
 } from "lucide-react";
-import { useTheme } from "@/features/theme/theme-provider";
 import { Toaster as Sonner, type ToasterProps } from "sonner";
 
 const Toaster = ({ ...props }: ToasterProps) => {

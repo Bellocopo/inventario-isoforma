@@ -16,9 +16,6 @@
  * Ou é invocado automaticamente pelo start-emu.ts.
  */
 
-import net from "node:net";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import {
   applicationDefault,
   getApps,
@@ -27,10 +24,13 @@ import {
 } from "firebase-admin/app";
 import { getAuth } from "firebase-admin/auth";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import net from "node:net";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
-  parseLegacyDb,
   buildCatalogDocs,
   buildStorageLocationDocs,
+  parseLegacyDb,
 } from "./lib/legacy.js";
 
 // ── Config ───────────────────────────────────────────────────────────────────

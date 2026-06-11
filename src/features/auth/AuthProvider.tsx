@@ -1,3 +1,10 @@
+import { auth } from "@/shared/lib/firebase";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  signOut,
+  type User,
+} from "firebase/auth";
 import {
   createContext,
   useEffect,
@@ -5,13 +12,6 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-  type User,
-} from "firebase/auth";
-import { auth } from "@/shared/lib/firebase";
 import { getDisplayName } from "./displayName";
 import type { AuthContextValue, AuthStatus, Role } from "./types";
 

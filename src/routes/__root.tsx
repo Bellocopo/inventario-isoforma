@@ -1,8 +1,8 @@
-import { TanStackRouterDevtools } from "@tanstack/router-devtools";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import type { AuthContextValue } from "@/features/auth/types";
 import { AuthSplash } from "@/features/auth/AuthSplash";
+import type { AuthContextValue } from "@/features/auth/types";
 import { useAuth } from "@/features/auth/useAuth";
+import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
+import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 
 interface RouterContext {
   auth: AuthContextValue;

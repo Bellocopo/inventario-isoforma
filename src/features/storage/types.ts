@@ -1,5 +1,5 @@
-import type { SupplierId } from "@/shared/lib/suppliers";
 import type { Categoria, Embal } from "@/features/catalog/types";
+import type { SupplierId } from "@/shared/lib/suppliers";
 
 export type { Categoria, Embal };
 

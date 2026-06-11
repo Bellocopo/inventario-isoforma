@@ -1,16 +1,16 @@
-import { useState } from "react";
 import { Eye, EyeOff, Pencil } from "lucide-react";
+import { useState } from "react";
 
-import { TableCell, TableRow } from "@/shared/components/ui/table";
+import { useRole } from "@/features/auth/useRole";
+import { EmbalBadge } from "@/shared/components/EmbalBadge";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
-import { EmbalBadge } from "@/shared/components/EmbalBadge";
+import { TableCell, TableRow } from "@/shared/components/ui/table";
 import { SUPPLIERS } from "@/shared/lib/suppliers";
 import { cn } from "@/shared/lib/utils";
-import { useRole } from "@/features/auth/useRole";
-import { useCatalogMutations } from "./useCatalog";
 import { CatalogForm } from "./CatalogForm";
 import type { Material } from "./types";
+import { useCatalogMutations } from "./useCatalog";
 
 const CATEGORIA_STYLE: Record<Material["categoria"], string> = {
   PADRAO: "bg-primary/10 text-primary border-primary/20",

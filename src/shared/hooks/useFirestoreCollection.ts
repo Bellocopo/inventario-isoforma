@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
-import { onSnapshot, type Query } from "firebase/firestore";
 import { FirebaseError } from "firebase/app";
+import { onSnapshot, type Query } from "firebase/firestore";
+import { useEffect, useState } from "react";
 
 type State<T> = {
   query: Query<T> | null;

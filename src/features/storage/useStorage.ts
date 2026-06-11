@@ -1,29 +1,29 @@
-import { useCallback, useMemo } from "react";
-import {
-  collection,
-  doc,
-  addDoc,
-  getDoc,
-  updateDoc,
-  deleteDoc,
-  writeBatch,
-  query,
-  orderBy,
-  where,
-  serverTimestamp,
-} from "firebase/firestore";
-import { toast } from "sonner";
-import { db } from "@/shared/lib/firebase";
-import { useFirestoreCollection } from "@/shared/hooks/useFirestoreCollection";
 import { useAuth } from "@/features/auth/useAuth";
-import { storageCollection, storageDoc } from "./firestore";
+import type { Material } from "@/features/catalog/types";
 import {
   buildKardexEntry,
   writeKardexEntryToBatch,
 } from "@/features/kardex/firestore";
+import { useFirestoreCollection } from "@/shared/hooks/useFirestoreCollection";
 import { todayLocalISO } from "@/shared/lib/date";
+import { db } from "@/shared/lib/firebase";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  orderBy,
+  query,
+  serverTimestamp,
+  updateDoc,
+  where,
+  writeBatch,
+} from "firebase/firestore";
+import { useCallback, useMemo } from "react";
+import { toast } from "sonner";
+import { storageCollection, storageDoc } from "./firestore";
 import type { Slot, StorageArea } from "./types";
-import type { Material } from "@/features/catalog/types";
 
 export function useStorageArea(area: StorageArea) {
   const q = useMemo(

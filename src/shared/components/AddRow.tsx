@@ -1,6 +1,6 @@
-import { Plus } from "lucide-react";
 import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
+import { Plus } from "lucide-react";
 
 type AddRowVariant = "neutral" | "masters" | "aditivos";
 

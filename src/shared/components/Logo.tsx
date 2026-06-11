@@ -1,5 +1,5 @@
-import { Box } from "lucide-react";
 import { cn } from "@/shared/lib/utils";
+import { Box } from "lucide-react";
 
 interface LogoProps {
   compact?: boolean;

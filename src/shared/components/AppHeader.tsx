@@ -1,10 +1,10 @@
-import { LogOut } from "lucide-react";
+import { useAuth } from "@/features/auth/useAuth";
+import { ModeToggle } from "@/features/theme/ModeToggle";
 import { Button } from "@/shared/components/ui/button";
+import { useSyncStatus } from "@/shared/hooks/useSyncStatus";
+import { LogOut } from "lucide-react";
 import { Logo } from "./Logo";
 import { SyncIndicator } from "./SyncIndicator";
-import { ModeToggle } from "@/features/theme/ModeToggle";
-import { useAuth } from "@/features/auth/useAuth";
-import { useSyncStatus } from "@/shared/hooks/useSyncStatus";
 
 export function AppHeader() {
   const { displayName, signOutNow } = useAuth();

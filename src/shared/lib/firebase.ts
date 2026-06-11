@@ -1,13 +1,13 @@
 import { initializeApp } from "firebase/app";
 import {
-  getAuth,
-  connectAuthEmulator,
   browserLocalPersistence,
+  connectAuthEmulator,
+  getAuth,
   setPersistence,
 } from "firebase/auth";
 import {
-  initializeFirestore,
   connectFirestoreEmulator,
+  initializeFirestore,
   persistentLocalCache,
   persistentMultipleTabManager,
 } from "firebase/firestore";

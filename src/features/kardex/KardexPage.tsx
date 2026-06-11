@@ -1,9 +1,18 @@
-import { useMemo, useState } from "react";
-import { Trash2, X } from "lucide-react";
 import { useRole } from "@/features/auth/useRole";
-import { MaterialCombobox } from "@/shared/components/MaterialCombobox";
-import { LocationCombobox } from "@/shared/components/LocationCombobox";
+import type { Material } from "@/features/catalog/types";
 import { EmbalBadge } from "@/shared/components/EmbalBadge";
+import { LocationCombobox } from "@/shared/components/LocationCombobox";
+import { MaterialCombobox } from "@/shared/components/MaterialCombobox";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/shared/components/ui/alert-dialog";
 import { Badge } from "@/shared/components/ui/badge";
 import { Button } from "@/shared/components/ui/button";
 import {
@@ -12,6 +21,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/shared/components/ui/pagination";
 import {
   Select,
   SelectContent,
@@ -27,26 +43,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/shared/components/ui/alert-dialog";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/shared/components/ui/pagination";
-import { useKardex, useKardexMutations } from "./useKardex";
+import { Trash2, X } from "lucide-react";
+import { useMemo, useState } from "react";
 import type { KardexEntry, KardexFilters, KardexTipo } from "./types";
-import type { Material } from "@/features/catalog/types";
+import { useKardex, useKardexMutations } from "./useKardex";
 
 const PAGE_SIZES = [25, 50, 100] as const;
 type PageSize = (typeof PAGE_SIZES)[number];

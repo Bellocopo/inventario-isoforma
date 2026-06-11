@@ -1,11 +1,11 @@
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { StrictMode, useEffect } from "react";
 import { createRoot } from "react-dom/client";
-import { routeTree } from "./routeTree.gen";
 import { AuthProvider } from "./features/auth/AuthProvider";
-import { useAuth } from "./features/auth/useAuth";
 import type { AuthContextValue } from "./features/auth/types";
+import { useAuth } from "./features/auth/useAuth";
 import { ThemeProvider } from "./features/theme/theme-provider";
+import { routeTree } from "./routeTree.gen";
 import "./styles/globals.css";
 
 const router = createRouter({

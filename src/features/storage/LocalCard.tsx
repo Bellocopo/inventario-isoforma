@@ -1,9 +1,5 @@
-import { useState } from "react";
-import { Trash2 } from "lucide-react";
-import { SUPPLIERS } from "@/shared/lib/suppliers";
 import { useRole } from "@/features/auth/useRole";
-import { useStorageMutations } from "./useStorage";
-import { FilledSlotRow, EmptySlotRow } from "./SlotRows";
+import type { Categoria, Material } from "@/features/catalog/types";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,9 +11,12 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/shared/components/ui/alert-dialog";
+import { SUPPLIERS } from "@/shared/lib/suppliers";
+import { Trash2 } from "lucide-react";
+import { useState } from "react";
+import { EmptySlotRow, FilledSlotRow } from "./SlotRows";
 import type { Slot, StorageLocation } from "./types";
-import type { Categoria } from "@/features/catalog/types";
-import type { Material } from "@/features/catalog/types";
+import { useStorageMutations } from "./useStorage";
 
 type LocalCardVariant = "neutral" | "masters" | "aditivos";
 

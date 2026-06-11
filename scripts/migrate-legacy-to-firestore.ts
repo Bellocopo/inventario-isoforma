@@ -20,9 +20,6 @@
  *   npm run migrate -- --commit --yes    # escreve no projeto real
  */
 
-import { existsSync } from "node:fs";
-import { join, dirname } from "node:path";
-import { fileURLToPath } from "node:url";
 import {
   applicationDefault,
   getApps,
@@ -34,10 +31,13 @@ import {
   getFirestore,
   type Firestore,
 } from "firebase-admin/firestore";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
-  parseLegacyDb,
   buildCatalogDocs,
   buildStorageLocationDocs,
+  parseLegacyDb,
   validateRefs,
   type DocSpec,
 } from "./lib/legacy.js";

@@ -1,6 +1,6 @@
 import { computeKpis } from "@/features/dashboard/aggregate";
-import { isSaco } from "@/shared/lib/business";
 import type { ConsolidatedItem } from "@/features/dashboard/types";
+import { isSaco } from "@/shared/lib/business";
 import type { PlanilhaData, PlanilhaRow } from "./types";
 
 const QTD_COLS = 10;

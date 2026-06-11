@@ -1,16 +1,16 @@
-import { useState } from "react";
-import { Search } from "lucide-react";
+import type { Material } from "@/features/catalog/types";
+import type { StorageLocation } from "@/features/storage/types";
+import { MaterialCombobox } from "@/shared/components/MaterialCombobox";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { MaterialCombobox } from "@/shared/components/MaterialCombobox";
 import { unitLabel } from "@/shared/lib/business";
+import { Search } from "lucide-react";
+import { useState } from "react";
 import { findLocations } from "./aggregate";
-import type { StorageLocation } from "@/features/storage/types";
-import type { Material } from "@/features/catalog/types";
 
 export function MaterialSearch({
   locations,

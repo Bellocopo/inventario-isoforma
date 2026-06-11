@@ -1,10 +1,9 @@
-import { useState } from "react";
+import type { Categoria, Material } from "@/features/catalog/types";
 import { EmbalBadge } from "@/shared/components/EmbalBadge";
 import { MaterialCombobox } from "@/shared/components/MaterialCombobox";
 import { SUPPLIERS } from "@/shared/lib/suppliers";
+import { useState } from "react";
 import type { Slot } from "./types";
-import type { Material } from "@/features/catalog/types";
-import type { Categoria } from "@/features/catalog/types";
 
 export function formatKg(qtd: number, kgUnit: number): string {
   return (qtd * kgUnit).toLocaleString("pt-BR") + " kg";

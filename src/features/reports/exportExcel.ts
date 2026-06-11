@@ -1,5 +1,5 @@
-import ExcelJS from "exceljs";
 import type { Borders } from "exceljs";
+import ExcelJS from "exceljs";
 import type { PlanilhaData, PlanilhaRow } from "./types";
 
 const YELLOW = "FFFFFF00";

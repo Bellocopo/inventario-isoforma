@@ -1,7 +1,7 @@
-import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { AppHeader } from "@/shared/components/AppHeader";
 import { AppTabs } from "@/shared/components/AppTabs";
 import { Toaster } from "@/shared/components/ui/sonner";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/_app")({
   beforeLoad: ({ context, location }) => {

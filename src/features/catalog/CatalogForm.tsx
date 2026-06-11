@@ -1,8 +1,11 @@
-import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { X } from "lucide-react";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 
+import { useRole } from "@/features/auth/useRole";
+import { SupplierSelect } from "@/shared/components/SupplierSelect";
+import { Button } from "@/shared/components/ui/button";
 import {
   Form,
   FormControl,
@@ -12,7 +15,7 @@ import {
   FormMessage,
 } from "@/shared/components/ui/form";
 import { Input } from "@/shared/components/ui/input";
-import { Button } from "@/shared/components/ui/button";
+import { Label } from "@/shared/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/shared/components/ui/radio-group";
 import {
   Select,
@@ -21,12 +24,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/components/ui/select";
-import { Label } from "@/shared/components/ui/label";
-import { SupplierSelect } from "@/shared/components/SupplierSelect";
-import { useRole } from "@/features/auth/useRole";
-import { useCatalogMutations } from "./useCatalog";
-import type { Material, MaterialInput } from "./types";
 import type { SupplierId } from "@/shared/lib/suppliers";
+import type { Material, MaterialInput } from "./types";
+import { useCatalogMutations } from "./useCatalog";
 
 const schema = z.object({
   categoria: z.enum(["PADRAO", "MASTER", "ADITIVO"]),
