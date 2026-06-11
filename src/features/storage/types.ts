@@ -35,6 +35,8 @@ export interface StorageLocation {
   createdAt: Date;
   updatedAt: Date;
   updatedBy: string;
+  verifiedOn: string | null;
+  verifiedBy: string;
 }
 
 export type StorageLocationInput = Omit<

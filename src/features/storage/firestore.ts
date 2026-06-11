@@ -20,6 +20,8 @@ const storageLocationConverter: FirestoreDataConverter<StorageLocation> = {
       ordem: location.ordem,
       slots: location.slots,
       updatedBy: location.updatedBy,
+      verifiedOn: location.verifiedOn,
+      verifiedBy: location.verifiedBy,
     };
   },
 
@@ -36,6 +38,8 @@ const storageLocationConverter: FirestoreDataConverter<StorageLocation> = {
       ordem: data.ordem as number,
       slots: (data.slots as Slot[]) ?? [],
       updatedBy: (data.updatedBy as string) ?? "",
+      verifiedOn: (data.verifiedOn as string | null) ?? null,
+      verifiedBy: (data.verifiedBy as string) ?? "",
       createdAt: data.createdAt
         ? (data.createdAt as Timestamp).toDate()
         : new Date(),

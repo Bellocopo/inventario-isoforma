@@ -95,6 +95,7 @@ export const RUAS = [
   "T",
   "U",
   "V",
+  "W",
   "X",
   "Y",
   "Z",
@@ -104,7 +105,6 @@ export const RUAS = [
   "D1",
   "E1",
   "F1",
-  "G1",
 ];
 
 export const FIXED_AREAS = ["direito", "esquerdo"] as const;

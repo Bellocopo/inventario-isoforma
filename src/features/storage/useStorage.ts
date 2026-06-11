@@ -21,6 +21,7 @@ import {
   buildKardexEntry,
   writeKardexEntryToBatch,
 } from "@/features/kardex/firestore";
+import { todayLocalISO } from "@/shared/lib/date";
 import type { Slot, StorageArea } from "./types";
 import type { Material } from "@/features/catalog/types";
 
@@ -101,6 +102,8 @@ export function useStorageMutations() {
           slots,
           updatedAt: serverTimestamp(),
           updatedBy: user?.uid ?? "",
+          verifiedOn: todayLocalISO(),
+          verifiedBy: user?.uid ?? "",
         });
 
         if (delta !== 0) {
@@ -134,6 +137,8 @@ export function useStorageMutations() {
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
         updatedBy: user?.uid ?? "",
+        verifiedOn: null,
+        verifiedBy: "",
       }).catch(() => toast.error("Erro ao criar local."));
     },
     [user],
@@ -156,11 +161,22 @@ export function useStorageMutations() {
     );
   }, []);
 
+  const setRuaVerificada = useCallback(
+    (locationId: string, verified: boolean) => {
+      void updateDoc(doc(db, "storage_locations", locationId), {
+        verifiedOn: verified ? todayLocalISO() : null,
+        verifiedBy: verified ? (user?.uid ?? "") : "",
+      }).catch(() => toast.error("Erro ao marcar verificação."));
+    },
+    [user],
+  );
+
   return {
     setSlotMaterial,
     setSlotQuantidade,
     createLocation,
     setLocationLabel,
     deleteLocation,
+    setRuaVerificada,
   };
 }

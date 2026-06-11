@@ -213,17 +213,26 @@ interface Slot {
 
 interface StorageLocation {
   area: "direito" | "esquerdo" | "fora" | "masters" | "aditivos";
-  rua: string | null; // "A".."Z", "A1".."G1" para direito/esquerdo; null para áreas livres
+  rua: string | null; // "A".."Z" (com W), "A1".."F1" para direito/esquerdo; null para áreas livres
   label: string; // nome amigável ("Direito A", "Doca", "Sala dos Masters - bloco 1")
   ordem: number; // ordenação na UI
   slots: Slot[]; // até 4; embutido no doc da rua (ver §5.3)
   createdAt: Timestamp;
   updatedAt: Timestamp;
   updatedBy: string; // uid
+  verifiedOn: string | null; // "YYYY-MM-DD" local (BRT); null = nunca conferida
+  verifiedBy: string; // uid de quem conferiu por último
 }
 ```
 
 Cor da rua = `SUPPLIERS[slots[0]?.materialSnapshot.fornecedor ?? "none"]`.
+
+**Verificação diária (Plano 015):** rua está "conferida hoje" quando
+`verifiedOn === todayLocalISO()` (data local, formato `YYYY-MM-DD`). Reset
+automático: no dia seguinte a comparação falha sem nenhum job. Gatilhos:
+ajuste de quantidade (focus-out) ou botão "Conferir" no card. Verificação
+pura não gera entrada no Kardex. Direito/Esquerdo apenas — áreas livres
+fora de escopo. Total de ruas: 32 (A-Z com W + A1-F1).
 
 IDs convencionados:
 

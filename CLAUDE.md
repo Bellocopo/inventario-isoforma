@@ -104,23 +104,24 @@ ou nos planos.
 
 ### Planos
 
-| #   | Plano                                                                                               | Status              |
-| --- | --------------------------------------------------------------------------------------------------- | ------------------- |
-| 001 | [Arquitetura inicial e modelo de dados](.claude/plans/001-initial-architecture-and-data-model.md)   | concluído (só docs) |
-| 002 | [Bootstrap do projeto](.claude/plans/002-bootstrap-project.md)                                      | concluído           |
-| 003 | [Firebase setup](.claude/plans/003-firebase-setup.md)                                               | concluído           |
-| 004 | [Auth (login real, guard de rotas)](.claude/plans/004-auth.md)                                      | concluído           |
-| 005 | Validação pós-auth (checkpoint manual)                                                              | concluído           |
-| 006 | [Design system](.claude/plans/006-design-system.md)                                                 | concluído           |
-| 007 | [Catálogo (CRUD `/catalog`)](.claude/plans/007-catalog.md)                                          | concluído           |
-| 008 | [Storage locations + stock items (Direito/Esquerdo)](.claude/plans/008-storage-direito-esquerdo.md) | concluído           |
-| 009 | [Áreas livres (Fora, Masters, Aditivos)](.claude/plans/009-areas-livres-fora-masters-aditivos.md)   | concluído           |
-| 010 | [Kardex](.claude/plans/010-kardex.md)                                                               | concluído           |
-| 011 | [Dashboard + busca + regra ≤25kg](.claude/plans/011-dashboard-busca-regra-25kg.md)                  | concluído           |
-| 012 | [Planilha Amarela + export Excel](.claude/plans/012-planilha-amarela-export-excel.md)               | concluído           |
-| 013 | [Migração `legacy/db.json` → Firestore](.claude/plans/013-migracao-legacy-db-json-firestore.md)     | concluído           |
-| 014 | [Deploy GitHub Pages + Actions](.claude/plans/014-deploy-github-pages-actions.md)                   | concluído           |
-| 015 | App Check                                                                                           | pendente            |
+| #   | Plano                                                                                                 | Status              |
+| --- | ----------------------------------------------------------------------------------------------------- | ------------------- |
+| 001 | [Arquitetura inicial e modelo de dados](.claude/plans/001-initial-architecture-and-data-model.md)     | concluído (só docs) |
+| 002 | [Bootstrap do projeto](.claude/plans/002-bootstrap-project.md)                                        | concluído           |
+| 003 | [Firebase setup](.claude/plans/003-firebase-setup.md)                                                 | concluído           |
+| 004 | [Auth (login real, guard de rotas)](.claude/plans/004-auth.md)                                        | concluído           |
+| 005 | Validação pós-auth (checkpoint manual)                                                                | concluído           |
+| 006 | [Design system](.claude/plans/006-design-system.md)                                                   | concluído           |
+| 007 | [Catálogo (CRUD `/catalog`)](.claude/plans/007-catalog.md)                                            | concluído           |
+| 008 | [Storage locations + stock items (Direito/Esquerdo)](.claude/plans/008-storage-direito-esquerdo.md)   | concluído           |
+| 009 | [Áreas livres (Fora, Masters, Aditivos)](.claude/plans/009-areas-livres-fora-masters-aditivos.md)     | concluído           |
+| 010 | [Kardex](.claude/plans/010-kardex.md)                                                                 | concluído           |
+| 011 | [Dashboard + busca + regra ≤25kg](.claude/plans/011-dashboard-busca-regra-25kg.md)                    | concluído           |
+| 012 | [Planilha Amarela + export Excel](.claude/plans/012-planilha-amarela-export-excel.md)                 | concluído           |
+| 013 | [Migração `legacy/db.json` → Firestore](.claude/plans/013-migracao-legacy-db-json-firestore.md)       | concluído           |
+| 014 | [Deploy GitHub Pages + Actions](.claude/plans/014-deploy-github-pages-actions.md)                     | concluído           |
+| 015 | [Verificação diária de ruas + correção W/G1](.claude/plans/015-verificacao-diaria-e-correcao-ruas.md) | concluído           |
+| 016 | App Check                                                                                             | pendente            |
 
 Roadmap completo em [.claude/architecture.md §12](.claude/architecture.md).
 

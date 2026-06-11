@@ -1,6 +1,7 @@
 import { RuaCard } from "./RuaCard";
 import type { StorageArea } from "./types";
 import { useStorageArea } from "./useStorage";
+import { isVerifiedToday } from "./verification";
 
 const AREA_LABELS: Record<
   "direito" | "esquerdo",
@@ -8,11 +9,11 @@ const AREA_LABELS: Record<
 > = {
   direito: {
     title: "Lado Direito",
-    subtitle: "Ruas A-Z (sem W) e A1-G1 do lado direito do galpão.",
+    subtitle: "Ruas A-Z e A1-F1 do lado direito do galpão.",
   },
   esquerdo: {
     title: "Lado Esquerdo",
-    subtitle: "Ruas A-Z (sem W) e A1-G1 do lado esquerdo do galpão.",
+    subtitle: "Ruas A-Z e A1-F1 do lado esquerdo do galpão.",
   },
 };
 
@@ -41,11 +42,26 @@ export function StorageAreaPage({ area }: StorageAreaPageProps) {
   const { locations, loading } = useStorageArea(area as StorageArea);
   const { title, subtitle } = AREA_LABELS[area];
 
+  const total = locations.length;
+  const conferidas = locations.filter((l) =>
+    isVerifiedToday(l.verifiedOn),
+  ).length;
+  const allDone = total > 0 && conferidas === total;
+
   return (
     <div className="space-y-6 p-4 md:p-6">
-      <div>
-        <h1 className="text-xl font-bold tracking-tight">{title}</h1>
-        <p className="text-muted-foreground text-sm">{subtitle}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">{title}</h1>
+          <p className="text-muted-foreground text-sm">{subtitle}</p>
+        </div>
+        {!loading && total > 0 && (
+          <span
+            className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-semibold${allDone ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400" : "bg-muted text-muted-foreground"}`}
+          >
+            {conferidas}/{total} conferidas hoje
+          </span>
+        )}
       </div>
 
       {loading ? (
