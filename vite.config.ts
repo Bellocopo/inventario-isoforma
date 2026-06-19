@@ -1,9 +1,9 @@
+import tailwindcss from "@tailwindcss/vite";
 import { tanstackRouter } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react";
-import { defineConfig, type Plugin } from "vite";
-import tailwindcss from "@tailwindcss/vite";
 import { copyFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { defineConfig, type Plugin } from "vite";
 
 // GitHub Pages serve 404.html para rotas não-arquivo; como a SPA usa history
 // mode, copiamos o index.html para 404.html no fim do build para que
@@ -19,8 +19,8 @@ function spaFallback404(): Plugin {
   };
 }
 
-export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/inventario-isoforma/" : "/",
+export default defineConfig(() => ({
+  base: "/",
   plugins: [
     tanstackRouter({ target: "react", autoCodeSplitting: true }),
     react(),
