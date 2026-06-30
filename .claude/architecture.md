@@ -512,6 +512,7 @@ ponto-de-partida; ajuste conforme o trabalho avança.
 | 013 | Migração `legacy/db.json` → Firestore (script + dry-run)               |
 | 014 | Deploy GitHub Pages + Actions + secrets                                |
 | 015 | App Check (quando domínio estabilizar)                                 |
+| 017 | Dashboard v2 (faixa de totais + cards por categoria selecionáveis)     |
 
 ## 13. Design system
 

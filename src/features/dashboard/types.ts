@@ -21,6 +21,12 @@ export interface DashboardKpis {
   tiposComSaldo: number; // itens com totalQtd > 0
 }
 
+export interface CategorySummary {
+  totalKg: number; // Σ totalKg da categoria
+  tipos: number; // materiais distintos com saldo na categoria
+  paletes: number; // Σ totalQtd onde kgUnit > 25 (só itens em palete)
+}
+
 export interface MaterialLocation {
   area: StorageArea;
   source: string; // nome humano da área ("Lado Direito", ...)

@@ -2,6 +2,7 @@ import type { Categoria } from "@/features/catalog/types";
 import type { StorageArea, StorageLocation } from "@/features/storage/types";
 import { isPalete } from "@/shared/lib/business";
 import type {
+  CategorySummary,
   ConsolidatedItem,
   DashboardKpis,
   MaterialLocation,
@@ -87,4 +88,18 @@ export function byCategoria(
   categoria: Categoria,
 ): ConsolidatedItem[] {
   return items.filter((item) => item.categoria === categoria);
+}
+
+export function categorySummary(
+  items: ConsolidatedItem[],
+  categoria: Categoria,
+): CategorySummary {
+  const ofCategoria = byCategoria(items, categoria);
+  let totalKg = 0;
+  let paletes = 0;
+  for (const item of ofCategoria) {
+    totalKg += item.totalKg;
+    if (isPalete(item.kgUnit)) paletes += item.totalQtd;
+  }
+  return { totalKg, tipos: ofCategoria.length, paletes };
 }

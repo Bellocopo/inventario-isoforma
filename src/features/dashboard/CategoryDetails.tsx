@@ -1,26 +1,15 @@
+import type { Categoria } from "@/features/catalog/types";
 import { EmbalBadge } from "@/shared/components/EmbalBadge";
 import { Badge } from "@/shared/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/shared/components/ui/card";
+import { Card, CardContent } from "@/shared/components/ui/card";
 import { unitLabel } from "@/shared/lib/business";
 import { SUPPLIERS } from "@/shared/lib/suppliers";
 import { cn } from "@/shared/lib/utils";
-import type { LucideIcon } from "lucide-react";
+import { byCategoria } from "./aggregate";
+import { CATEGORY_BY_ID } from "./categories";
 import type { ConsolidatedItem } from "./types";
 
-type PosicaoVariant = "neutral" | "masters" | "aditivos";
-
 const nf = new Intl.NumberFormat("pt-BR");
-
-const TITLE_CLASSES: Record<PosicaoVariant, string> = {
-  neutral: "",
-  masters: "text-brand-pink-foreground",
-  aditivos: "text-brand-purple-foreground",
-};
 
 function swatchColor(item: ConsolidatedItem): string {
   if (item.colorCode) return item.colorCode;
@@ -67,47 +56,50 @@ function MaterialRow({
   );
 }
 
-export function PosicaoSection({
-  title,
-  icon: Icon,
-  variant,
+export function CategoryDetails({
+  categoria,
   items,
 }: {
-  title: string;
-  icon: LucideIcon;
-  variant: PosicaoVariant;
+  categoria: Categoria;
   items: ConsolidatedItem[];
 }) {
-  if (items.length === 0) return null;
+  const cat = CATEGORY_BY_ID[categoria];
+  const Icon = cat.icon;
+  const rows = byCategoria(items, categoria);
 
   return (
-    <Card>
-      <CardHeader className="pb-2">
-        <CardTitle
-          className={cn(
-            "flex items-center gap-2 text-sm font-bold tracking-wider uppercase",
-            TITLE_CLASSES[variant],
-          )}
-        >
-          <Icon className="size-4" />
-          {title}
-        </CardTitle>
-      </CardHeader>
+    <Card className="gap-0 overflow-hidden py-0">
+      <div
+        className={cn(
+          "flex items-center gap-2 px-4 py-3 text-sm font-bold tracking-wider uppercase",
+          cat.headerBg,
+          cat.headerText,
+        )}
+      >
+        <Icon className="size-4" />
+        Detalhes: {cat.label}
+      </div>
       <CardContent className="p-0">
-        <div className="grid grid-cols-1 sm:grid-cols-2">
-          {items.map((item, i) => (
-            <MaterialRow
-              key={item.materialId}
-              item={item}
-              className={cn(
-                "border-b",
-                i === items.length - 1 && "border-b-0",
-                i === items.length - 2 && "sm:border-b-0",
-                i % 2 === 0 && "sm:border-r",
-              )}
-            />
-          ))}
-        </div>
+        {rows.length === 0 ? (
+          <p className="text-muted-foreground px-4 py-10 text-center text-sm">
+            Nenhum item nesta categoria.
+          </p>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2">
+            {rows.map((item, i) => (
+              <MaterialRow
+                key={item.materialId}
+                item={item}
+                className={cn(
+                  "border-b",
+                  i === rows.length - 1 && "border-b-0",
+                  i === rows.length - 2 && "sm:border-b-0",
+                  i % 2 === 0 && "sm:border-r",
+                )}
+              />
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );
