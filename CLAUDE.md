@@ -123,6 +123,7 @@ ou nos planos.
 | 015 | [Verificação diária de ruas + correção W/G1](.claude/plans/015-verificacao-diaria-e-correcao-ruas.md) | concluído           |
 | 016 | App Check                                                                                             | pendente            |
 | 017 | [Dashboard v2 (cards por categoria)](.claude/plans/017-dashboard-v2-cards-por-categoria.md)           | concluído           |
+| 018 | [Contagem completa por corredor](.claude/plans/018-contagem-completa-corredor.md)                     | em execução         |
 
 Roadmap completo em [.claude/architecture.md §12](.claude/architecture.md).
 

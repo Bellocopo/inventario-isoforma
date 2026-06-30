@@ -13,9 +13,11 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   orderBy,
   query,
   serverTimestamp,
+  setDoc,
   updateDoc,
   where,
   writeBatch,
@@ -24,6 +26,7 @@ import { useCallback, useMemo } from "react";
 import { toast } from "sonner";
 import { storageCollection, storageDoc } from "./firestore";
 import type { Slot, StorageArea } from "./types";
+import { isVerifiedToday } from "./verification";
 
 export function useStorageArea(area: StorageArea) {
   const q = useMemo(
@@ -42,6 +45,40 @@ export function useAllStorage() {
 
 export function useStorageMutations() {
   const { user, displayName } = useAuth();
+
+  // Grava control/{area} = hoje quando todas as ruas do corredor estão
+  // conferidas hoje. Idempotente no dia (guard do getDoc) e nunca apaga ao
+  // desmarcar — só sobrescreve quando um novo dia completa.
+  const maybeMarkCorridorComplete = useCallback(
+    async (area: StorageArea) => {
+      if (area !== "direito" && area !== "esquerdo") return;
+      const today = todayLocalISO();
+
+      const ctrlRef = doc(db, "control", area);
+      const ctrlSnap = await getDoc(ctrlRef);
+      if (ctrlSnap.exists() && ctrlSnap.data().lastCompleteOn === today) return;
+
+      const qs = await getDocs(
+        query(storageCollection, where("area", "==", area)),
+      );
+      if (qs.empty) return;
+      const allToday = qs.docs.every((d) =>
+        isVerifiedToday(d.data().verifiedOn),
+      );
+      if (!allToday) return;
+
+      await setDoc(
+        ctrlRef,
+        {
+          lastCompleteOn: today,
+          updatedAt: serverTimestamp(),
+          updatedBy: user?.uid ?? "",
+        },
+        { merge: true },
+      );
+    },
+    [user],
+  );
 
   const setSlotMaterial = useCallback(
     (locationId: string, slotIndex: number, material: Material | null) => {
@@ -121,9 +158,10 @@ export function useStorageMutations() {
         }
 
         await batch.commit();
+        await maybeMarkCorridorComplete(snap.data().area);
       })().catch(() => toast.error("Erro ao atualizar quantidade."));
     },
-    [user, displayName],
+    [user, displayName, maybeMarkCorridorComplete],
   );
 
   const createLocation = useCallback(
@@ -162,13 +200,16 @@ export function useStorageMutations() {
   }, []);
 
   const setRuaVerificada = useCallback(
-    (locationId: string, verified: boolean) => {
-      void updateDoc(doc(db, "storage_locations", locationId), {
-        verifiedOn: verified ? todayLocalISO() : null,
-        verifiedBy: verified ? (user?.uid ?? "") : "",
-      }).catch(() => toast.error("Erro ao marcar verificação."));
+    (locationId: string, area: StorageArea, verified: boolean) => {
+      void (async () => {
+        await updateDoc(doc(db, "storage_locations", locationId), {
+          verifiedOn: verified ? todayLocalISO() : null,
+          verifiedBy: verified ? (user?.uid ?? "") : "",
+        });
+        if (verified) await maybeMarkCorridorComplete(area);
+      })().catch(() => toast.error("Erro ao marcar verificação."));
     },
-    [user],
+    [user, maybeMarkCorridorComplete],
   );
 
   return {

@@ -26,7 +26,7 @@ export function RuaCard({ location }: RuaCardProps) {
   const { setSlotMaterial, setSlotQuantidade, setRuaVerificada } =
     useStorageMutations();
 
-  const { id, rua, label, slots, verifiedOn } = location;
+  const { id, area, rua, label, slots, verifiedOn } = location;
   const accentColor = ruaAccentColor(slots);
   const verified = isVerifiedToday(verifiedOn);
 
@@ -58,7 +58,7 @@ export function RuaCard({ location }: RuaCardProps) {
         {isAdmin && (
           <button
             className={`hover:bg-accent ml-auto flex h-8 w-8 items-center justify-center rounded transition-colors ${verified ? "text-green-500" : "text-muted-foreground/40 hover:text-muted-foreground"}`}
-            onClick={() => setRuaVerificada(id, !verified)}
+            onClick={() => setRuaVerificada(id, area, !verified)}
             title={verified ? "Desmarcar conferência" : "Marcar como conferida"}
           >
             <CheckCircle2 className="h-5 w-5" />

@@ -495,24 +495,25 @@ inicial.
 Cada item vira um arquivo em `.claude/plans/nnn-*.md`. Esta lista é
 ponto-de-partida; ajuste conforme o trabalho avança.
 
-| #   | Plano                                                                  |
-| --- | ---------------------------------------------------------------------- |
-| 001 | Arquitetura inicial + modelo de dados (este; doc + roadmap)            |
-| 002 | Bootstrap do projeto (Vite + TS + Tailwind + TanStack Router + shells) |
-| 003 | Firebase setup: config via env, regras, custom claims, script set-role |
-| 004 | Auth (login, guard de rota, useAuth/useRole)                           |
-| 005 | Validação pós-auth (checkpoint manual)                                 |
-| 006 | Design system (shadcn/ui, tokens, theme switcher, componentes base)    |
-| 007 | Catálogo (CRUD em `/catalog` + UI de gestão)                           |
-| 008 | Storage locations + stock items (Direito/Esquerdo)                     |
-| 009 | Áreas livres (Fora, Masters, Aditivos)                                 |
-| 010 | Kardex (listeners, escrita via onBlur, exclusão admin)                 |
-| 011 | Dashboard (agregações, busca de material, regra ≤25kg)                 |
-| 012 | Planilha Amarela + export Excel (exceljs)                              |
-| 013 | Migração `legacy/db.json` → Firestore (script + dry-run)               |
-| 014 | Deploy GitHub Pages + Actions + secrets                                |
-| 015 | App Check (quando domínio estabilizar)                                 |
-| 017 | Dashboard v2 (faixa de totais + cards por categoria selecionáveis)     |
+| #   | Plano                                                                    |
+| --- | ------------------------------------------------------------------------ |
+| 001 | Arquitetura inicial + modelo de dados (este; doc + roadmap)              |
+| 002 | Bootstrap do projeto (Vite + TS + Tailwind + TanStack Router + shells)   |
+| 003 | Firebase setup: config via env, regras, custom claims, script set-role   |
+| 004 | Auth (login, guard de rota, useAuth/useRole)                             |
+| 005 | Validação pós-auth (checkpoint manual)                                   |
+| 006 | Design system (shadcn/ui, tokens, theme switcher, componentes base)      |
+| 007 | Catálogo (CRUD em `/catalog` + UI de gestão)                             |
+| 008 | Storage locations + stock items (Direito/Esquerdo)                       |
+| 009 | Áreas livres (Fora, Masters, Aditivos)                                   |
+| 010 | Kardex (listeners, escrita via onBlur, exclusão admin)                   |
+| 011 | Dashboard (agregações, busca de material, regra ≤25kg)                   |
+| 012 | Planilha Amarela + export Excel (exceljs)                                |
+| 013 | Migração `legacy/db.json` → Firestore (script + dry-run)                 |
+| 014 | Deploy GitHub Pages + Actions + secrets                                  |
+| 015 | App Check (quando domínio estabilizar)                                   |
+| 017 | Dashboard v2 (faixa de totais + cards por categoria selecionáveis)       |
+| 018 | Contagem completa por corredor (coleção `control`, data no card resinas) |
 
 ## 13. Design system
 

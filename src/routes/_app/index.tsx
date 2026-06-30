@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import type { Categoria } from "@/features/catalog/types";
+import { useCorridorCounts } from "@/features/control/useCorridorCounts";
 import { useDashboard } from "@/features/dashboard/useDashboard";
 import { CategoryCards } from "@/features/dashboard/CategoryCards";
 import { CategoryDetails } from "@/features/dashboard/CategoryDetails";
@@ -31,6 +32,7 @@ function DashboardSkeleton() {
 
 function DashboardPage() {
   const { locations, items, kpis, loading } = useDashboard();
+  const corridorCounts = useCorridorCounts();
   const [selected, setSelected] = useState<Categoria>("PADRAO");
 
   if (loading) return <DashboardSkeleton />;
@@ -41,7 +43,12 @@ function DashboardPage() {
 
       <StockSummaryBar kpis={kpis} />
 
-      <CategoryCards items={items} selected={selected} onSelect={setSelected} />
+      <CategoryCards
+        items={items}
+        selected={selected}
+        onSelect={setSelected}
+        corridorCounts={corridorCounts}
+      />
 
       <CategoryDetails categoria={selected} items={items} />
     </div>

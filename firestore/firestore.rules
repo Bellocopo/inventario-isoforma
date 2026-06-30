@@ -18,6 +18,13 @@ service cloud.firestore {
       // melhoria futura: validar request.resource.data.slots.size() <= 4
     }
 
+    // Metadados de controle (ex: control/direito, control/esquerdo —
+    // data da última contagem completa do corredor).
+    match /control/{docId} {
+      allow read:  if isSignedIn();
+      allow write: if isAdmin();
+    }
+
     match /kardex/{logId} {
       allow read:   if isSignedIn();
       allow create: if isAdmin();

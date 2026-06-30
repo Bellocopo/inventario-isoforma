@@ -1,4 +1,6 @@
 import type { Categoria } from "@/features/catalog/types";
+import type { CorridorCounts } from "@/features/control/useCorridorCounts";
+import { formatLocalISOToBr } from "@/shared/lib/date";
 import { cn } from "@/shared/lib/utils";
 import { categorySummary } from "./aggregate";
 import { CATEGORIES } from "./categories";
@@ -6,14 +8,18 @@ import type { ConsolidatedItem } from "./types";
 
 const nf = new Intl.NumberFormat("pt-BR");
 
+const fmtCount = (iso: string | null) => (iso ? formatLocalISOToBr(iso) : "—");
+
 export function CategoryCards({
   items,
   selected,
   onSelect,
+  corridorCounts,
 }: {
   items: ConsolidatedItem[];
   selected: Categoria;
   onSelect: (categoria: Categoria) => void;
+  corridorCounts?: CorridorCounts;
 }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -79,6 +85,17 @@ export function CategoryCards({
               >
                 {cat.subtitle(summary)}
               </p>
+              {cat.id === "PADRAO" && corridorCounts && (
+                <p
+                  className={cn(
+                    "mt-1 text-[11px]",
+                    isSel ? "text-white/60" : "text-muted-foreground",
+                  )}
+                >
+                  Última Contagem · Dir {fmtCount(corridorCounts.direito)} · Esq{" "}
+                  {fmtCount(corridorCounts.esquerdo)}
+                </p>
+              )}
             </div>
           </button>
         );

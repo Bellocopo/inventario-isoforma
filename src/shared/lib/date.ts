@@ -5,3 +5,12 @@ export function todayLocalISO(): string {
   const dd = String(d.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 }
+
+// "YYYY-MM-DD" local → "dd/mm" (ou "dd/mm/yyyy" com { year: true }).
+export function formatLocalISOToBr(
+  iso: string,
+  opts: { year?: boolean } = {},
+): string {
+  const [y, m, d] = iso.split("-");
+  return opts.year ? `${d}/${m}/${y}` : `${d}/${m}`;
+}
