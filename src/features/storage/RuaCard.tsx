@@ -23,7 +23,7 @@ interface RuaCardProps {
 
 export function RuaCard({ location }: RuaCardProps) {
   const { isAdmin } = useRole();
-  const { setSlotMaterial, setSlotQuantidade, setRuaVerificada } =
+  const { setSlotMaterial, setSlotQuantidade, transferSlot, setRuaVerificada } =
     useStorageMutations();
 
   const { id, area, rua, label, slots, verifiedOn } = location;
@@ -34,6 +34,8 @@ export function RuaCard({ location }: RuaCardProps) {
     setSlotMaterial(id, i, m);
   const handleSaveQty = (i: number, qty: number) =>
     setSlotQuantidade(id, i, qty);
+  const handleTransfer = (i: number, toId: string, qty: number) =>
+    transferSlot(id, i, toId, qty);
 
   // Linha vazia só para admin (reader só visualiza)
   const showEmptyRow = isAdmin && slots.length < 4;
@@ -75,6 +77,7 @@ export function RuaCard({ location }: RuaCardProps) {
             isAdmin={isAdmin}
             onSelectMaterial={handleSelectMaterial}
             onSaveQty={handleSaveQty}
+            onTransfer={handleTransfer}
           />
         ))}
         {showEmptyRow && (

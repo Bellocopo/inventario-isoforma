@@ -1,7 +1,20 @@
 import type { Categoria, Material } from "@/features/catalog/types";
 import { EmbalBadge } from "@/shared/components/EmbalBadge";
+import { LocationCombobox } from "@/shared/components/LocationCombobox";
 import { MaterialCombobox } from "@/shared/components/MaterialCombobox";
+import { Button } from "@/shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/shared/components/ui/dialog";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
 import { SUPPLIERS } from "@/shared/lib/suppliers";
+import { ArrowRightLeft } from "lucide-react";
 import { useState } from "react";
 import type { Slot } from "./types";
 
@@ -23,6 +36,11 @@ export interface FilledSlotRowProps {
   categoria?: Categoria;
   onSelectMaterial: (i: number, m: Material | null) => void;
   onSaveQty: (i: number, qty: number) => void;
+  onTransfer: (
+    i: number,
+    toLocationId: string,
+    qty: number,
+  ) => Promise<boolean>;
 }
 
 export function FilledSlotRow({
@@ -32,8 +50,18 @@ export function FilledSlotRow({
   categoria,
   onSelectMaterial,
   onSaveQty,
+  onTransfer,
 }: FilledSlotRowProps) {
   const [qty, setQty] = useState(slot.quantidade);
+  const [savedQty, setSavedQty] = useState(slot.quantidade);
+  const [transferOpen, setTransferOpen] = useState(false);
+
+  // Sincroniza o input quando o banco muda (ex.: transferência). Sem isso o
+  // valor antigo seria regravado no blur como ENTRADA/SAÍDA externa.
+  if (savedQty !== slot.quantidade) {
+    setSavedQty(slot.quantidade);
+    setQty(slot.quantidade);
+  }
 
   return (
     <div className="flex flex-col gap-1">
@@ -78,8 +106,98 @@ export function FilledSlotRow({
         <span className="text-muted-foreground shrink-0 text-right text-xs tabular-nums">
           {formatKg(qty, slot.materialSnapshot.kgUnit)}
         </span>
+        {isAdmin && slot.quantidade > 0 && (
+          <button
+            type="button"
+            onClick={() => setTransferOpen(true)}
+            title="Transferir para outro local"
+            className="text-muted-foreground hover:text-foreground shrink-0 p-1 transition-colors"
+          >
+            <ArrowRightLeft className="size-4" />
+          </button>
+        )}
       </div>
+      {transferOpen && (
+        <TransferDialog
+          slot={slot}
+          onClose={() => setTransferOpen(false)}
+          onConfirm={(toId, n) => onTransfer(slotIndex, toId, n)}
+        />
+      )}
     </div>
+  );
+}
+
+// ── Transferência (movimentação interna) ─────────────────────────────────────
+
+function TransferDialog({
+  slot,
+  onClose,
+  onConfirm,
+}: {
+  slot: Slot;
+  onClose: () => void;
+  onConfirm: (toLocationId: string, qty: number) => Promise<boolean>;
+}) {
+  const [destino, setDestino] = useState<string | null>(null);
+  const [qty, setQty] = useState(slot.quantidade);
+  const [saving, setSaving] = useState(false);
+
+  const valid =
+    destino !== null &&
+    Number.isInteger(qty) &&
+    qty >= 1 &&
+    qty <= slot.quantidade;
+
+  const submit = async () => {
+    if (!valid) return;
+    setSaving(true);
+    const ok = await onConfirm(destino, qty);
+    setSaving(false);
+    if (ok) onClose();
+  };
+
+  return (
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle>Transferir material</DialogTitle>
+          <DialogDescription>
+            {slot.materialSnapshot.tipo} · {slot.quantidade} disponíveis. Não
+            altera o total do estoque.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
+            <Label>Destino</Label>
+            <LocationCombobox
+              value={destino}
+              onSelect={setDestino}
+              placeholder="Selecionar destino"
+            />
+          </div>
+          <div className="flex flex-col gap-1.5">
+            <Label htmlFor="transfer-qty">Quantidade</Label>
+            <Input
+              id="transfer-qty"
+              type="number"
+              min={1}
+              max={slot.quantidade}
+              value={qty}
+              onChange={(e) => setQty(Number(e.currentTarget.value))}
+            />
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose} disabled={saving}>
+            Cancelar
+          </Button>
+          <Button onClick={() => void submit()} disabled={!valid || saving}>
+            Transferir
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
 
