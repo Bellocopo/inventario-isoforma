@@ -166,7 +166,7 @@ o legado).
   }
   locationId: string;
   locationLabel: string; // snapshot
-  tipo: "ENTRADA" | "SAIDA";
+  tipo: "ENTRADA" | "SAIDA" | "TRANSF_ENTRADA" | "TRANSF_SAIDA";
   qtd: number; // sempre positivo
   kgTotal: number; // qtd * kgUnit
   userId: string;
@@ -174,11 +174,22 @@ o legado).
 }
 ```
 
-- Gatilho: diff de quantidade em `setSlotQuantidade`. delta > 0 → ENTRADA,
-  < 0 → SAIDA, 0 → nada. Gravado no mesmo `writeBatch` do slot.
+- **Externa** (`ENTRADA`/`SAIDA`) muda o total armazenado. Gatilho: diff de
+  quantidade em `setSlotQuantidade`. delta > 0 → ENTRADA, < 0 → SAIDA,
+  0 → nada. Gravado no mesmo `writeBatch` do slot.
+- **Interna** (`TRANSF_*`) é troca de local, total inalterado. Gatilho:
+  `transferSlot` (botão Transferir no slot): debita a origem, soma no slot do
+  mesmo material no destino (ou cria, até 4) e grava `TRANSF_SAIDA` (origem)
+  - `TRANSF_ENTRADA` (destino) num único `writeBatch`. Não marca
+    conferência.
+- Natureza vive no próprio `tipo`, sem campo extra: docs antigos (só
+  ENTRADA/SAIDA) contam como externos sem backfill — um campo novo ficaria
+  de fora de `==`/`in` nos docs que não o têm.
 - Trocar/limpar material do slot **não** gera log (paridade legado).
-- Tela: filtros server-side (material/local/tipo), paginação por cursor
-  (`startAfter` + pilha), total via `getCountFromServer`.
+- Tela: filtros server-side (material/local + natureza × operação →
+  `tipo ==`/`in`, que usa os mesmos índices compostos de `==`), paginação por
+  cursor (`startAfter` + pilha), total via `getCountFromServer`. Cards de
+  Entradas/Saídas/Balanço somam só externas.
 
 ### 5.4 `/control/{area}`
 
