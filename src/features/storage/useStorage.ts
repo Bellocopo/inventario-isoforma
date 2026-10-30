@@ -164,6 +164,105 @@ export function useStorageMutations() {
     [user, displayName, maybeMarkCorridorComplete],
   );
 
+  // Movimentação interna: total armazenado não muda, então não marca
+  // conferência. Soma no slot do mesmo material no destino ou cria um.
+  const transferSlot = useCallback(
+    async (
+      fromLocationId: string,
+      slotIndex: number,
+      toLocationId: string,
+      qtd: number,
+    ): Promise<boolean> => {
+      try {
+        if (fromLocationId === toLocationId) {
+          toast.error("Origem e destino são o mesmo local.");
+          return false;
+        }
+        const [fromSnap, toSnap] = await Promise.all([
+          getDoc(storageDoc(fromLocationId)),
+          getDoc(storageDoc(toLocationId)),
+        ]);
+        if (!fromSnap.exists() || !toSnap.exists()) {
+          toast.error("Local não encontrado.");
+          return false;
+        }
+
+        const fromSlots: Slot[] = [...(fromSnap.data().slots ?? [])];
+        const origem = fromSlots[slotIndex];
+        if (!origem || !Number.isInteger(qtd) || qtd < 1) return false;
+        if (qtd > origem.quantidade) {
+          toast.error(`Só há ${origem.quantidade} na origem.`);
+          return false;
+        }
+
+        const toSlots: Slot[] = [...(toSnap.data().slots ?? [])];
+        const destIndex = toSlots.findIndex(
+          (s) => s.materialId === origem.materialId,
+        );
+        const destSlot = toSlots[destIndex];
+        if (destSlot) {
+          toSlots[destIndex] = {
+            ...destSlot,
+            quantidade: destSlot.quantidade + qtd,
+          };
+        } else if (toSlots.length < 4) {
+          toSlots.push({ ...origem, quantidade: qtd });
+        } else {
+          toast.error("Destino já tem 4 materiais.");
+          return false;
+        }
+        fromSlots[slotIndex] = {
+          ...origem,
+          quantidade: origem.quantidade - qtd,
+        };
+
+        const meta = {
+          updatedAt: serverTimestamp(),
+          updatedBy: user?.uid ?? "",
+        };
+        const kardexBase = {
+          slot: origem,
+          userId: user?.uid ?? "",
+          userDisplay: displayName ?? "",
+          interna: true,
+        };
+        const batch = writeBatch(db);
+        batch.update(doc(db, "storage_locations", fromLocationId), {
+          slots: fromSlots,
+          ...meta,
+        });
+        batch.update(doc(db, "storage_locations", toLocationId), {
+          slots: toSlots,
+          ...meta,
+        });
+        writeKardexEntryToBatch(
+          batch,
+          buildKardexEntry({
+            ...kardexBase,
+            locationId: fromLocationId,
+            locationLabel: fromSnap.data().label,
+            delta: -qtd,
+          }),
+        );
+        writeKardexEntryToBatch(
+          batch,
+          buildKardexEntry({
+            ...kardexBase,
+            locationId: toLocationId,
+            locationLabel: toSnap.data().label,
+            delta: qtd,
+          }),
+        );
+        await batch.commit();
+        return true;
+      } catch {
+        toast.error("Erro ao transferir.");
+        return false;
+      }
+    },
+    [user, displayName],
+  );
+
   const createLocation = useCallback(
     (area: StorageArea, label: string) => {
       void addDoc(collection(db, "storage_locations"), {
@@ -215,6 +314,7 @@ export function useStorageMutations() {
   return {
     setSlotMaterial,
     setSlotQuantidade,
+    transferSlot,
     createLocation,
     setLocationLabel,
     deleteLocation,
