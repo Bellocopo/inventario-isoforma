@@ -169,7 +169,7 @@ export function KardexPage() {
   const hasFilters =
     filters.materialId !== undefined ||
     filters.locationId !== undefined ||
-    filters.tipo !== undefined;
+    filters.tipos !== undefined;
 
   const colCount = isAdmin ? 7 : 6;
 
@@ -246,11 +246,11 @@ export function KardexPage() {
         </div>
 
         <Select
-          value={filters.tipo ?? "all"}
+          value={filters.tipos?.[0] ?? "all"}
           onValueChange={(v) =>
             setFilters((prev) => ({
               ...prev,
-              tipo: v === "all" ? undefined : (v as KardexTipo),
+              tipos: v === "all" ? undefined : [v as KardexTipo],
             }))
           }
         >

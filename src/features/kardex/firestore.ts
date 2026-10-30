@@ -68,9 +68,18 @@ export function buildKardexEntry(params: {
   delta: number;
   userId: string;
   userDisplay: string;
+  interna?: boolean;
 }): KardexEntryInput {
-  const { slot, locationId, locationLabel, delta, userId, userDisplay } =
-    params;
+  const {
+    slot,
+    locationId,
+    locationLabel,
+    delta,
+    userId,
+    userDisplay,
+    interna,
+  } = params;
+  const direcao = delta > 0 ? "ENTRADA" : "SAIDA";
   return {
     materialId: slot.materialId,
     materialSnapshot: {
@@ -80,7 +89,7 @@ export function buildKardexEntry(params: {
     },
     locationId,
     locationLabel,
-    tipo: delta > 0 ? "ENTRADA" : "SAIDA",
+    tipo: interna ? `TRANSF_${direcao}` : direcao,
     qtd: Math.abs(delta),
     kgTotal: Math.abs(delta) * slot.materialSnapshot.kgUnit,
     userId,
