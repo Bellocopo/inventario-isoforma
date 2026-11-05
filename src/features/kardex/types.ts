@@ -1,6 +1,12 @@
 import type { Embal } from "@/features/catalog/types";
 
-export type KardexTipo = "ENTRADA" | "SAIDA";
+// ENTRADA/SAIDA = externa (muda o total armazenado); TRANSF_* = interna
+// (troca de local). Docs antigos só têm ENTRADA/SAIDA, logo contam como externos.
+export type KardexTipo =
+  | "ENTRADA"
+  | "SAIDA"
+  | "TRANSF_ENTRADA"
+  | "TRANSF_SAIDA";
 
 export interface KardexEntry {
   id: string;
@@ -21,5 +27,5 @@ export type KardexEntryInput = Omit<KardexEntry, "id" | "timestamp">;
 export interface KardexFilters {
   materialId?: string;
   locationId?: string;
-  tipo?: KardexTipo;
+  tipos?: KardexTipo[];
 }

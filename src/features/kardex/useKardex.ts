@@ -27,7 +27,7 @@ function makePaginationKey(filters: KardexFilters, pageSize: number): string {
   return [
     filters.materialId ?? "",
     filters.locationId ?? "",
-    filters.tipo ?? "",
+    filters.tipos?.join(",") ?? "",
     pageSize,
   ].join("|");
 }
@@ -66,13 +66,15 @@ export function useKardex({
       constraints.push(where("materialId", "==", filters.materialId));
     if (filters.locationId)
       constraints.push(where("locationId", "==", filters.locationId));
-    if (filters.tipo) constraints.push(where("tipo", "==", filters.tipo));
+    const tipos = filters.tipos ?? [];
+    if (tipos.length === 1) constraints.push(where("tipo", "==", tipos[0]));
+    else if (tipos.length > 1) constraints.push(where("tipo", "in", tipos));
     return query(
       kardexCollection,
       ...constraints,
       orderBy("timestamp", "desc"),
     );
-  }, [filters.materialId, filters.locationId, filters.tipo]);
+  }, [filters.materialId, filters.locationId, filters.tipos]);
 
   // Total count for pagination
   useEffect(() => {

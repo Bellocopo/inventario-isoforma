@@ -43,13 +43,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/shared/components/ui/table";
-import { Trash2, X } from "lucide-react";
+import { ArrowRightLeft, Trash2, X } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { KardexEntry, KardexFilters, KardexTipo } from "./types";
 import { useKardex, useKardexMutations } from "./useKardex";
 
 const PAGE_SIZES = [25, 50, 100] as const;
 type PageSize = (typeof PAGE_SIZES)[number];
+
+type Natureza = "all" | "externa" | "interna";
+type Direcao = "all" | "entrada" | "saida";
+
+const TIPOS: { tipo: KardexTipo; natureza: Natureza; direcao: Direcao }[] = [
+  { tipo: "ENTRADA", natureza: "externa", direcao: "entrada" },
+  { tipo: "SAIDA", natureza: "externa", direcao: "saida" },
+  { tipo: "TRANSF_ENTRADA", natureza: "interna", direcao: "entrada" },
+  { tipo: "TRANSF_SAIDA", natureza: "interna", direcao: "saida" },
+];
+
+function resolveTipos(
+  natureza: Natureza,
+  direcao: Direcao,
+): KardexTipo[] | undefined {
+  if (natureza === "all" && direcao === "all") return undefined;
+  return TIPOS.filter(
+    (t) =>
+      (natureza === "all" || t.natureza === natureza) &&
+      (direcao === "all" || t.direcao === direcao),
+  ).map((t) => t.tipo);
+}
 
 function formatDateTime(date: Date): string {
   return date.toLocaleString("pt-BR", {
@@ -71,11 +93,31 @@ function formatKg(kg: number): string {
 }
 
 function TipoBadge({ tipo }: { tipo: KardexTipo }) {
-  if (tipo === "ENTRADA")
-    return (
-      <Badge className="bg-success text-success-foreground">ENTRADA</Badge>
-    );
-  return <Badge variant="destructive">SAÍDA</Badge>;
+  switch (tipo) {
+    case "ENTRADA":
+      return (
+        <Badge className="bg-success text-success-foreground">ENTRADA</Badge>
+      );
+    case "SAIDA":
+      return <Badge variant="destructive">SAÍDA</Badge>;
+    case "TRANSF_ENTRADA":
+      return (
+        <Badge variant="outline" className="border-success text-success gap-1">
+          <ArrowRightLeft className="size-3" />
+          TRANSF. ENTRADA
+        </Badge>
+      );
+    case "TRANSF_SAIDA":
+      return (
+        <Badge
+          variant="outline"
+          className="border-destructive text-destructive gap-1"
+        >
+          <ArrowRightLeft className="size-3" />
+          TRANSF. SAÍDA
+        </Badge>
+      );
+  }
 }
 
 function TableSkeleton({ rows, cols }: { rows: number; cols: number }) {
@@ -147,7 +189,16 @@ function KardexRow({ entry, isAdmin, onDelete }: KardexRowProps) {
 export function KardexPage() {
   const { isAdmin } = useRole();
 
-  const [filters, setFilters] = useState<KardexFilters>({});
+  const [baseFilters, setBaseFilters] = useState<Omit<KardexFilters, "tipos">>(
+    {},
+  );
+  const [natureza, setNatureza] = useState<Natureza>("all");
+  const [direcao, setDirecao] = useState<Direcao>("all");
+  // Memoizado: useKardex usa a identidade do array como dependência da query.
+  const filters = useMemo<KardexFilters>(
+    () => ({ ...baseFilters, tipos: resolveTipos(natureza, direcao) }),
+    [baseFilters, natureza, direcao],
+  );
   const [pageSize, setPageSize] = useState<PageSize>(25);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
@@ -155,12 +206,13 @@ export function KardexPage() {
     useKardex({ filters, pageSize });
   const { deleteEntry } = useKardexMutations();
 
+  // Só externas: transferência não muda o total armazenado.
   const { entradaKg, saidaKg } = useMemo(() => {
     let entradaKg = 0;
     let saidaKg = 0;
     for (const e of entries) {
       if (e.tipo === "ENTRADA") entradaKg += e.kgTotal;
-      else saidaKg += e.kgTotal;
+      else if (e.tipo === "SAIDA") saidaKg += e.kgTotal;
     }
     return { entradaKg, saidaKg };
   }, [entries]);
@@ -169,7 +221,12 @@ export function KardexPage() {
   const hasFilters =
     filters.materialId !== undefined ||
     filters.locationId !== undefined ||
-    filters.tipo !== undefined;
+    filters.tipos !== undefined;
+  const clearFilters = () => {
+    setBaseFilters({});
+    setNatureza("all");
+    setDirecao("all");
+  };
 
   const colCount = isAdmin ? 7 : 6;
 
@@ -187,7 +244,7 @@ export function KardexPage() {
         <Card className="py-4">
           <CardHeader className="pb-1">
             <CardTitle className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
-              Entradas
+              Entradas externas
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -199,7 +256,7 @@ export function KardexPage() {
         <Card className="py-4">
           <CardHeader className="pb-1">
             <CardTitle className="text-muted-foreground text-xs font-medium tracking-wider uppercase">
-              Saídas
+              Saídas externas
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -231,7 +288,7 @@ export function KardexPage() {
           <MaterialCombobox
             value={filters.materialId ?? null}
             onSelect={(m: Material | null) =>
-              setFilters((prev) => ({ ...prev, materialId: m?.id }))
+              setBaseFilters((prev) => ({ ...prev, materialId: m?.id }))
             }
           />
         </div>
@@ -240,27 +297,36 @@ export function KardexPage() {
           <LocationCombobox
             value={filters.locationId ?? null}
             onSelect={(id) =>
-              setFilters((prev) => ({ ...prev, locationId: id ?? undefined }))
+              setBaseFilters((prev) => ({
+                ...prev,
+                locationId: id ?? undefined,
+              }))
             }
           />
         </div>
 
         <Select
-          value={filters.tipo ?? "all"}
-          onValueChange={(v) =>
-            setFilters((prev) => ({
-              ...prev,
-              tipo: v === "all" ? undefined : (v as KardexTipo),
-            }))
-          }
+          value={natureza}
+          onValueChange={(v) => setNatureza(v as Natureza)}
         >
-          <SelectTrigger className="w-full sm:w-36">
-            <SelectValue placeholder="Tipo" />
+          <SelectTrigger className="w-full sm:w-40">
+            <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Todos</SelectItem>
-            <SelectItem value="ENTRADA">ENTRADA</SelectItem>
-            <SelectItem value="SAIDA">SAÍDA</SelectItem>
+            <SelectItem value="all">Externas e internas</SelectItem>
+            <SelectItem value="externa">Externas</SelectItem>
+            <SelectItem value="interna">Internas (transf.)</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={direcao} onValueChange={(v) => setDirecao(v as Direcao)}>
+          <SelectTrigger className="w-full sm:w-40">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Entradas e saídas</SelectItem>
+            <SelectItem value="entrada">Entradas</SelectItem>
+            <SelectItem value="saida">Saídas</SelectItem>
           </SelectContent>
         </Select>
 
@@ -268,7 +334,7 @@ export function KardexPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => setFilters({})}
+            onClick={clearFilters}
             className="gap-1.5"
           >
             <X className="size-3.5" />

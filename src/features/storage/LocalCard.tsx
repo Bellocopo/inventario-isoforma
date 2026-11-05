@@ -44,6 +44,7 @@ export function LocalCard({ location, categoria, variant }: LocalCardProps) {
   const {
     setSlotMaterial,
     setSlotQuantidade,
+    transferSlot,
     setLocationLabel,
     deleteLocation,
   } = useStorageMutations();
@@ -56,6 +57,8 @@ export function LocalCard({ location, categoria, variant }: LocalCardProps) {
     setSlotMaterial(id, i, m);
   const handleSaveQty = (i: number, qty: number) =>
     setSlotQuantidade(id, i, qty);
+  const handleTransfer = (i: number, toId: string, qty: number) =>
+    transferSlot(id, i, toId, qty);
 
   const showEmptyRow = isAdmin && slots.length < 4;
 
@@ -123,6 +126,7 @@ export function LocalCard({ location, categoria, variant }: LocalCardProps) {
             categoria={categoria}
             onSelectMaterial={handleSelectMaterial}
             onSaveQty={handleSaveQty}
+            onTransfer={handleTransfer}
           />
         ))}
         {showEmptyRow && (

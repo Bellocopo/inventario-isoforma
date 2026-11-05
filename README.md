@@ -28,7 +28,7 @@ npm run dev
 ## Emuladores Firebase
 
 ```bash
-npm run emu
+npm run emu        # sobe os emuladores e roda o seed (legacy/db.json) quando ficam prontos
 # Auth:      http://127.0.0.1:9099
 # Firestore: http://127.0.0.1:8080
 # UI:        http://127.0.0.1:4000
@@ -110,33 +110,30 @@ No Windows (PowerShell), exporte a credencial com
 
 ## Deploy (GitHub Pages)
 
-O app é publicado automaticamente em
-**https://bellocopo.github.io/inventario-isoforma/** pelo workflow
+O app é publicado em **https://inventario.isoforma.com.br** pelo workflow
 [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml) a cada push na
-`main` (ou via "Run workflow" manual). Build com `npm ci && npm run build` e
-publicação pelo deploy oficial do Pages (sem branch `gh-pages`).
+`main` (ou via "Run workflow" manual): `npm ci && npm run build` e publicação
+pelo deploy oficial do Pages (sem branch `gh-pages`).
 
-Como o app vive sob o subcaminho `/inventario-isoforma/`, o Vite usa `base` e o
-router usa `basepath` no build; um plugin copia `index.html` → `404.html` para
-que deep-links/refresh (history mode) reidratem a SPA em vez de dar 404.
+O domínio vem de `public/CNAME` e o app é servido na raiz (`base: "/"`). Um
+plugin no build copia `index.html` → `404.html` para que deep-links/refresh
+(history mode) reidratem a SPA.
 
-**Configuração única (uma vez):**
+**Configuração única (já feita; refazer só se recriar o repo/projeto):**
 
 1. **Repository secrets** (Settings → Secrets and variables → Actions →
-   _Repository secrets_) — os 6 valores do `firebaseConfig` (Firebase Console →
-   Project settings → Your apps → Web):
+   _Repository secrets_) — os 6 valores do `firebaseConfig`:
    `VITE_FIREBASE_API_KEY`, `VITE_FIREBASE_AUTH_DOMAIN`, `VITE_FIREBASE_PROJECT_ID`,
    `VITE_FIREBASE_STORAGE_BUCKET`, `VITE_FIREBASE_MESSAGING_SENDER_ID`,
    `VITE_FIREBASE_APP_ID`. Use _Repository_ (não _Environment_): o job `build`
-   não declara `environment` e não enxergaria secrets de environment.
-2. **Pages source** (Settings → Pages → Build and deployment → Source):
-   **GitHub Actions**.
-3. **Authorized domains** (Firebase Console → Authentication → Settings →
-   Authorized domains): adicionar `bellocopo.github.io` (senão o login falha com
+   não declara `environment`.
+2. **Pages** (Settings → Pages): source **GitHub Actions** e custom domain
+   `inventario.isoforma.com.br`.
+3. **Authorized domains** (Firebase Console → Authentication → Settings):
+   incluir `inventario.isoforma.com.br` (senão o login falha com
    `auth/unauthorized-domain`).
 
-`VITE_USE_EMULATORS` não é definido no CI → default `false` (produção usa o
-Firebase real).
+`VITE_USE_EMULATORS` não é definido no CI → produção usa o Firebase real.
 
 ## Deploy de regras Firestore
 
@@ -149,11 +146,13 @@ npm run rules:deploy
 
 ```
 src/
-  features/      # domínios (auth, catalog, inventory, kardex, …)
-  shared/        # lib, ui, hooks, utils reutilizáveis
-firestore/       # regras e indexes versionados
-scripts/         # scripts Node (set-role)
-legacy/          # sistema antigo (read-only, referência)
+  routes/        # rotas file-based (TanStack Router)
+  features/      # domínios (auth, catalog, storage, kardex, dashboard, reports, control, theme)
+  shared/        # componentes, hooks, lib e stores reutilizáveis
+firestore/       # regras e índices versionados
+scripts/         # scripts Node + Admin SDK (emulador, seed, migração, usuários)
+public/          # estáticos (CNAME)
+legacy/          # sistema antigo — local, gitignored (necessário para seed/migrate)
 ```
 
-Decisões de arquitetura: [.claude/architecture.md](.claude/architecture.md)
+Decisões de arquitetura: [.claude/architecture.md](.claude/architecture.md).

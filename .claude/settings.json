@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run typecheck)",
+      "Bash(npm run lint)",
+      "Bash(npm run lint -- *)",
+      "Bash(npm run build)",
+      "Bash(npm run format)",
+      "Bash(npx prettier *)",
+      "Bash(git status *)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "mcp__claude_ai_Context7"
+    ],
+    "deny": [
+      "Bash(npm run rules:deploy *)",
+      "Bash(npm run users *)",
+      "Bash(npm run set-role *)",
+      "Bash(npm run migrate *--commit*)",
+      "Bash(npx firebase deploy *)",
+      "Read(./secrets/**)",
+      "Read(./.env.local)"
+    ]
+  }
+}
